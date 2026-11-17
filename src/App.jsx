@@ -20,7 +20,9 @@ import JannaAvatar from './components/JannaAvatar';
 import JatiAvatar from './components/JatiAvatar';
 import VoiceButton from './components/VoiceButton.jsx';
 import QuizFeedbackAccessibility from './components/questions/QuizFeedbackAccessibility.jsx';
-import QuizSpeechConsent from './components/speech/QuizSpeechConsent.jsx';
+const QuizSpeechConsent = React.lazy(() => import('./components/speech/QuizSpeechConsent.jsx'));
+const QuizDiagnosticsPanel = React.lazy(() => import('./components/questions/QuizDiagnosticsPanel.jsx'));
+const BetaFeedbackButton = React.lazy(() => import('./components/feedback/BetaFeedbackButton.jsx'));
 import CommunicationContentErrorFallback from './components/communication/CommunicationContentErrorFallback.jsx';
 import { renderSubjectQuestionText } from './components/SubjectLanguageText.jsx';
 const TutorAIModal = React.lazy(() => import('./components/ai/TutorAIModal.jsx'));
@@ -5499,7 +5501,7 @@ function BetaChrome({ children, recoveryMessages = [], modalOpen = false, curren
       <ConnectivityNotice />
       <div className="app-page-shell" data-screen={currentScreen}>{children}</div>
       {recoveryMessages.length > 0 && <StorageRecoveryNotice messages={recoveryMessages} />}
-      {isInternalUiSurfaceEnabled() && <BetaFeedbackButton suppressed={feedbackSuppressed} />}
+      {isInternalUiSurfaceEnabled() && <React.Suspense fallback={null}><BetaFeedbackButton suppressed={feedbackSuppressed} onSaveFeedback={saveFeedbackItem} version={APP_VERSION} buildDate={APP_BUILD_DATE} betaStatus={BETA_STATUS} IconGlyph={IconGlyph} BrandLogo={BrandLogo} /></React.Suspense>}
       <AppVersiFooter />
     </div>
   </>;
@@ -5604,71 +5606,6 @@ function FirstRunWizard({ profile, onComplete, onAccountLogin }) {
       </div>
     </section>
   </main>;
-}
-
-function BetaFeedbackButton({ suppressed = false }) {
-  const categories = ['Pepijat', 'Cadangan', 'Kandungan', 'AI', 'Pengalaman'];
-  const [open, setOpen] = useState(false);
-  const [category, setKategori] = useState('Pepijat');
-  const [rating, setRating] = useState(5);
-  const [comment, setComment] = useState('');
-  const [screenshotDescription, setScreenshotDescription] = useState('');
-  const [saved, setSaved] = useState(false);
-  const closeRef = useRef(null);
-
-  useEffect(() => {
-    if (!open) return undefined;
-    closeRef.current?.focus();
-    function onKeyDown(event) {
-      if (event.key === 'Escape') setOpen(false);
-    }
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [open]);
-
-  if (suppressed) return null;
-
-  function submitFeedback() {
-    const trimmed = comment.trim();
-    if (!trimmed) return;
-    saveFeedbackItem({
-      id: `feedback_${Date.now()}`,
-      category,
-      rating: Number(rating),
-      comment: trimmed,
-      message: trimmed,
-      screenshotDescription: screenshotDescription.trim(),
-      status: BETA_STATUS,
-      version: APP_VERSION,
-      buildDate: APP_BUILD_DATE,
-      screen: window.location.hash || window.location.pathname,
-      createdAt: new Date().toISOString()
-    });
-    setComment('');
-    setScreenshotDescription('');
-    setRating(5);
-    setSaved(true);
-    setTimeout(() => setOpen(false), 900);
-  }
-
-  return <>
-    <button type="button" className="beta-feedback-fab" aria-label="Maklum Balas Beta" title="Maklum Balas Beta" onClick={() => { setSaved(false); setOpen(true); }}><IconGlyph name="message" decorative /><span>Maklum Balas Beta</span></button>
-    {open && <div className="beta-feedback-overlay" role="dialog" aria-modal="true" aria-labelledby="beta-feedback-title">
-      <section className="beta-feedback-panel">
-        <div className="beta-feedback-head"><div className="modal-brand-title"><BrandLogo iconOnly size="sm" /><div><p className="eyebrow">Beta Tertutup</p><h2 id="beta-feedback-title">Maklum Balas</h2></div></div><button ref={closeRef} type="button" className="ghost" onClick={() => setOpen(false)}>Tutup</button></div>
-        <label id="feedback-category-label">Kategori</label>
-        <div className="feedback-category-grid" role="group" aria-labelledby="feedback-category-label">{categories.map(item => <button type="button" key={item} className={category === item ? '' : 'secondary'} aria-pressed={category === item} onClick={() => setKategori(item)}>{item}</button>)}</div>
-        <label id="feedback-rating-label">Rating</label>
-        <div className="feedback-rating-grid" role="group" aria-labelledby="feedback-rating-label">{[1, 2, 3, 4, 5].map(item => <button type="button" key={item} className={rating === item ? '' : 'secondary'} aria-pressed={rating === item} onClick={() => setRating(item)}>{item}</button>)}</div>
-        <label htmlFor="feedback-comment">Komen</label>
-        <textarea id="feedback-comment" value={comment} onChange={event => setComment(event.target.value)} placeholder="Apa yang berlaku? Apa yang patut diperbaiki?" />
-        <label htmlFor="feedback-screenshot-description">Deskripsi screenshot</label>
-        <textarea id="feedback-screenshot-description" value={screenshotDescription} onChange={event => setScreenshotDescription(event.target.value)} placeholder="Terangkan apa yang kelihatan dalam screenshot, jika ada." />
-        {saved && <p className="autosave-note">Maklum balas disimpan pada peranti ini.</p>}
-        <button type="button" className="full" onClick={submitFeedback} disabled={!comment.trim()}>Simpan Maklum Balas</button>
-      </section>
-    </div>}
-  </>;
 }
 
 function Login({ onStart, onBack, onSupabaseReady, guestProfile, onResumeGuest }) {
@@ -6116,10 +6053,10 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
     })[cloudSyncStatus] || (isEnglishSubject ? 'Cloud sync is active.' : 'Sync cloud aktif untuk akaun ini.');
 
   if (quizSpeechConsentOpen) {
-    return <QuizSpeechConsent open onConfirm={confirmQuizSpeechConsent} onDecline={declineQuizSpeechConsent} />;
+    return <React.Suspense fallback={<p role="status">Memuat borang kebenaran rakaman...</p>}><QuizSpeechConsent open onConfirm={confirmQuizSpeechConsent} onDecline={declineQuizSpeechConsent} /></React.Suspense>;
   }
 
-  return <main className="app"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Soalan {questionIndex + 1} / {topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo iconOnly /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progressWidth}%` }} /></div><h1 className="question" dir="auto">{renderUasaQuestionText(question.q)}</h1>{interactiveQuestion ? <React.Suspense fallback={<p className="interactive-loading">Memuat aktiviti...</p>}><InteractiveQuestionEngine key={question.id} question={question} value={answer} onChange={onAnswerChange} feedback={feedback} /></React.Suspense> : <input value={answer} dir="auto" onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (!quizMobileSttPilot.requested && ['starting', 'listening', 'stopping', 'processing'].includes(speechState)) return; if (quizMobileSttPilot.requested && ['starting', 'recording', 'stopping', 'processing'].includes(speechState)) return; answerChecked ? onNextQuestion() : onCheckAnswer(); } }} placeholder={quizUi.answerPlaceholder} autoFocus />}<div className="actions"><VoiceButton text={question?.q?.replaceAll('________', ' kosong ')} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label={quizUi.readQuestion} title={quizUi.readQuestion} className="secondary" />{speechSupported && !interactiveQuestion && <button className="secondary" type="button" onClick={handleSpeechStart} aria-label={speechButtonLabel} disabled={answerChecked || (quizMobileSttPilot.requested && (!quizMobileSttFactory || ['stopping', 'processing', 'starting'].includes(speechState))) || (!quizMobileSttPilot.requested && ['starting', 'stopping', 'processing'].includes(speechState))}>{quizMobileSttPilot.requested && !quizMobileSttFactory ? 'Memuat rakaman...' : speechButtonLabel}</button>}<button className="secondary" type="button" onClick={onPetunjuk} disabled={feedback?.status === 'correct'}>Petunjuk</button></div>{quizMobileSttPilot.requested && (!quizMobileSttPilot.enabled || !hasAccountSession) && !interactiveQuestion && <p className="autosave-note" role="status">{!hasAccountSession && quizMobileSttPilot.enabled ? 'Log masuk untuk menggunakan pilot mikrofon kuiz. Taip jawapan jika perlu.' : 'Rakaman suara tidak tersedia pada peranti ini. Taip jawapan secara manual.'}</p>}{speechSupported && !interactiveQuestion && <p className="speech-status" aria-live="polite"><b>{speechStatusLabel}</b>{speechTranscript ? <span dir="auto">{speechTranscript}</span> : <span>{quizMobileSttPilot.requested ? 'Tekan mikrofon untuk mula. Tekan Henti rakaman apabila selesai.' : speechState === 'listening' ? 'Cakap jawapan, kemudian tekan Selesai.' : speechState === 'stopping' ? 'Menunggu mikrofon berhenti...' : 'Tekan mikrofon untuk mula, kemudian tekan Selesai.'}</span>}</p>}{speechMessage && <p className="autosave-note" aria-live="polite">{speechMessage}</p>}{speechResult && speechResult.source !== 'mobile-stt' && <p className={`speech-result ${speechResult.correct ? 'correct' : 'wrong'}`}>{speechResult.correct ? 'Betul' : 'Cuba lagi'} · Keyakinan {speechResult.confidence}%</p>}<div className="actions"><button className="secondary" type="button" onClick={onBookmark}>{isBookmarked ? 'Ditanda' : 'Tanda Soalan'}</button><button className="secondary" type="button" onClick={onOpenAi}>{quizUi.askTeacher}</button></div><button className="full" type="button" onClick={onCheckAnswer} disabled={answerChecked || (!quizMobileSttPilot.requested && ['starting', 'listening', 'stopping', 'processing'].includes(speechState)) || (quizMobileSttPilot.requested && ['starting', 'recording', 'stopping', 'processing'].includes(speechState))}>Semak Jawapan</button>{isInternalUiSurfaceEnabled() && <details className="qde-debug-panel"><summary>Panel Bantuan</summary><dl><dt>Soalan Dipilih</dt><dd>{qipRow.metadata?.questionId || question.id || '-'}</dd><dt>Sebab Dipilih</dt><dd>{qipRow.reasonSelected || debugRow.reason || '-'}</dd><dt>Keputusan Sejarah</dt><dd>{JSON.stringify(qipRow.historyCheck || { historyMatch: Boolean(qipRow.historyMatch || debugRow.historyMatch) })}</dd><dt>Keputusan Pendua</dt><dd>{(qipRow.duplicateCheck || debugRow.duplicateCheck || ['pass']).join(', ')}</dd><dt>Skor Kepelbagaian</dt><dd>{diversityScore.overallDiversity || 0}%</dd><dt>Stem Asal</dt><dd>{qipRow.originalStem || question.question || '-'}</dd><dt>Stem Dipilih</dt><dd>{qipRow.selectedStem || question.q || '-'}</dd><dt>Kumpulan Variasi</dt><dd>{qipRow.variationGroup || '-'}</dd><dt>Sebab Stem</dt><dd>{qipRow.stemSelectionReason || '-'}</dd><dt>Penggunaan Semula Stem</dt><dd>{qipRow.stemReuseCount || 0}</dd><dt>Konteks Asal</dt><dd>{qipRow.originalContext || '-'}</dd><dt>Konteks Dipilih</dt><dd>{qipRow.selectedContext || '-'}</dd><dt>Kumpulan Konteks</dt><dd>{qipRow.contextGroup || '-'}</dd><dt>Sebab Konteks</dt><dd>{qipRow.contextSelectionReason || '-'}</dd><dt>Penggunaan Semula Konteks</dt><dd>{qipRow.contextReuseCount || 0}</dd><dt>Kepelbagaian Konteks</dt><dd>{diversityScore.contextDiversity || 0}%</dd><dt>Templat</dt><dd>{qipRow.metadata?.templateId || qipRow.templateId || debugRow.templateId || debugRow.templateUsed || '-'}</dd><dt>Tahap Kesukaran</dt><dd>{qipRow.metadata?.difficulty || qipRow.difficulty || debugRow.difficulty || question.difficulty || '-'}</dd></dl></details>}<p className={`autosave-note ${hasAccountSession ? "" : "device-only-save-note"}`}>{syncMessage}</p></section>{feedback && <><QuizFeedbackAccessibility title={feedbackTitle} message={feedback.message} answerChecked={answerChecked} canRetry={canRetryQuizAnswer(feedback)} retryLabel={quizUi.retry} nextLabel={quizUi.next} /><section className={`feedback ${feedback.status}`} role="region" aria-labelledby="quiz-feedback-title"><MascotCard character={quizCharacter} mood={feedbackMood} size="sm" animation="gentle" message={feedbackMessage} /><h2 id="quiz-feedback-title">{feedbackTitle}</h2><p>{feedback.message}</p>{feedback.status !== 'hint' && feedback.correctAnswer && <p>Jawapan tepat: <b dir="auto">{feedback.correctAnswer}</b></p>}{feedback.status !== 'hint' && (feedback.explanation || safeQuestionExplanation) && <div className="explain-box"><b>{quizCharacter === 'jati' ? 'Jati' : 'Janna'}</b><p dir="auto">{feedback.explanation || safeQuestionExplanation}</p></div>}{feedback.status === 'hint' && <VoiceButton text={safeHint} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label={quizUi.readHint} title={quizUi.readHint} className="secondary" />}{answerChecked && <div className="actions"><button className="secondary" type="button" onClick={onExplain}>Terangkan</button>{canRetryQuizAnswer(feedback) && <button className="secondary" type="button" onClick={onTryAgain}>Cuba Lagi</button>}<button type="button" onClick={onNextQuestion}>Seterusnya</button></div>}</section></>}</main>;
+  return <main className="app"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Soalan {questionIndex + 1} / {topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo iconOnly /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progressWidth}%` }} /></div><h1 className="question" dir="auto">{renderUasaQuestionText(question.q)}</h1>{interactiveQuestion ? <React.Suspense fallback={<p className="interactive-loading">Memuat aktiviti...</p>}><InteractiveQuestionEngine key={question.id} question={question} value={answer} onChange={onAnswerChange} feedback={feedback} /></React.Suspense> : <input value={answer} dir="auto" onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (!quizMobileSttPilot.requested && ['starting', 'listening', 'stopping', 'processing'].includes(speechState)) return; if (quizMobileSttPilot.requested && ['starting', 'recording', 'stopping', 'processing'].includes(speechState)) return; answerChecked ? onNextQuestion() : onCheckAnswer(); } }} placeholder={quizUi.answerPlaceholder} autoFocus />}<div className="actions"><VoiceButton text={question?.q?.replaceAll('________', ' kosong ')} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label={quizUi.readQuestion} title={quizUi.readQuestion} className="secondary" />{speechSupported && !interactiveQuestion && <button className="secondary" type="button" onClick={handleSpeechStart} aria-label={speechButtonLabel} disabled={answerChecked || (quizMobileSttPilot.requested && (!quizMobileSttFactory || ['stopping', 'processing', 'starting'].includes(speechState))) || (!quizMobileSttPilot.requested && ['starting', 'stopping', 'processing'].includes(speechState))}>{quizMobileSttPilot.requested && !quizMobileSttFactory ? 'Memuat rakaman...' : speechButtonLabel}</button>}<button className="secondary" type="button" onClick={onPetunjuk} disabled={feedback?.status === 'correct'}>Petunjuk</button></div>{quizMobileSttPilot.requested && (!quizMobileSttPilot.enabled || !hasAccountSession) && !interactiveQuestion && <p className="autosave-note" role="status">{!hasAccountSession && quizMobileSttPilot.enabled ? 'Log masuk untuk menggunakan pilot mikrofon kuiz. Taip jawapan jika perlu.' : 'Rakaman suara tidak tersedia pada peranti ini. Taip jawapan secara manual.'}</p>}{speechSupported && !interactiveQuestion && <p className="speech-status" aria-live="polite"><b>{speechStatusLabel}</b>{speechTranscript ? <span dir="auto">{speechTranscript}</span> : <span>{quizMobileSttPilot.requested ? 'Tekan mikrofon untuk mula. Tekan Henti rakaman apabila selesai.' : speechState === 'listening' ? 'Cakap jawapan, kemudian tekan Selesai.' : speechState === 'stopping' ? 'Menunggu mikrofon berhenti...' : 'Tekan mikrofon untuk mula, kemudian tekan Selesai.'}</span>}</p>}{speechMessage && <p className="autosave-note" aria-live="polite">{speechMessage}</p>}{speechResult && speechResult.source !== 'mobile-stt' && <p className={`speech-result ${speechResult.correct ? 'correct' : 'wrong'}`}>{speechResult.correct ? 'Betul' : 'Cuba lagi'} · Keyakinan {speechResult.confidence}%</p>}<div className="actions"><button className="secondary" type="button" onClick={onBookmark}>{isBookmarked ? 'Ditanda' : 'Tanda Soalan'}</button><button className="secondary" type="button" onClick={onOpenAi}>{quizUi.askTeacher}</button></div><button className="full" type="button" onClick={onCheckAnswer} disabled={answerChecked || (!quizMobileSttPilot.requested && ['starting', 'listening', 'stopping', 'processing'].includes(speechState)) || (quizMobileSttPilot.requested && ['starting', 'recording', 'stopping', 'processing'].includes(speechState))}>Semak Jawapan</button>{isInternalUiSurfaceEnabled() && <React.Suspense fallback={null}><QuizDiagnosticsPanel qipRow={qipRow} debugRow={debugRow} question={question} diversityScore={diversityScore} /></React.Suspense>}<p className={`autosave-note ${hasAccountSession ? "" : "device-only-save-note"}`}>{syncMessage}</p></section>{feedback && <><QuizFeedbackAccessibility title={feedbackTitle} message={feedback.message} answerChecked={answerChecked} canRetry={canRetryQuizAnswer(feedback)} retryLabel={quizUi.retry} nextLabel={quizUi.next} /><section className={`feedback ${feedback.status}`} role="region" aria-labelledby="quiz-feedback-title"><MascotCard character={quizCharacter} mood={feedbackMood} size="sm" animation="gentle" message={feedbackMessage} /><h2 id="quiz-feedback-title">{feedbackTitle}</h2><p>{feedback.message}</p>{feedback.status !== 'hint' && feedback.correctAnswer && <p>Jawapan tepat: <b dir="auto">{feedback.correctAnswer}</b></p>}{feedback.status !== 'hint' && (feedback.explanation || safeQuestionExplanation) && <div className="explain-box"><b>{quizCharacter === 'jati' ? 'Jati' : 'Janna'}</b><p dir="auto">{feedback.explanation || safeQuestionExplanation}</p></div>}{feedback.status === 'hint' && <VoiceButton text={safeHint} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label={quizUi.readHint} title={quizUi.readHint} className="secondary" />}{answerChecked && <div className="actions"><button className="secondary" type="button" onClick={onExplain}>Terangkan</button>{canRetryQuizAnswer(feedback) && <button className="secondary" type="button" onClick={onTryAgain}>Cuba Lagi</button>}<button type="button" onClick={onNextQuestion}>Seterusnya</button></div>}</section></>}</main>;
 }
 
 function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChange, onClearResume }) {
