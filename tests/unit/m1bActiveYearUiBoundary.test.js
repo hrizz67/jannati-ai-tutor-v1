@@ -15,11 +15,11 @@ describe('M1-B active-year UI subject boundary', () => {
     expect(source.indexOf('if (!activeYearBankReady && !showAccountLogin')).toBeLessThan(source.indexOf("if (screen === 'quiz') {\n    const question = currentQuestion()"));
   });
 
-  it('routes selected and background-loaded subjects through explicit guarded year', () => {
+  it('guards the existing Year 2 loader and cancels stale background results', () => {
     expect(source).toMatch(/if \(!activeYearBankReady\) \{\s+allSubjectsLoadRef\.current = null;\s+setSelectedSubject\(null\);\s+setAllSubjects\(\[\]\);/);
-    expect(source).toMatch(/loadYearScopedSubjectData\(\{\s+year: activeStudentYear,\s+subjectId: selectedSubjectId\s+\}\)/);
+    expect(source).toMatch(/loadSubjectData\(selectedSubjectId\)\.then\(subject =>/);
     expect(source).toMatch(/if \(!activeYearBankReady\) return Promise\.resolve\(\[\]\);/);
-    expect(source).toMatch(/loadYearScopedSubjects\(\{\s+year: activeStudentYear\s+\}\)/);
+    expect(source).toContain('allSubjectsLoadRef.current = loadAllSubjects()');
     expect(source).toContain('activeStudentYearRef.current !== activeStudentYear');
   });
 
