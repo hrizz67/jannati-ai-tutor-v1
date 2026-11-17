@@ -2272,6 +2272,7 @@ export default function App() {
       setGamificationProfile(resetGamificationProfile());
       resetSmartQuestionState();
       localStorage.setItem(ACTIVE_CHILD_KEY, nextChild.id);
+      subjectLoadGateRef.current.invalidate();
       clearTransientChildState();
       setChildProfiles(nextProfiles);
       setActiveChildId(nextChild.id);
@@ -4624,6 +4625,8 @@ export default function App() {
 
   function handleSelectSubject(subjectId) {
     if (!subjectId || !subjectLoadGateRef.current.isCurrent(subjectLoadGateRef.current.capture())) return;
+    // A new subject selection must not be overwritten by an older resume.
+    subjectLoadGateRef.current.invalidate();
     setSelectedSubjectId(subjectId);
     setScreen('dashboard');
   }
