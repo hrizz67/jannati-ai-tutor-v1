@@ -5438,7 +5438,7 @@ export default function App() {
     return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={false} currentScreen="password-recovery"><React.Suspense fallback={<main className="app login-page"><section className="card"><p role="status">Menyediakan pemulihan akaun...</p></section></main>}><main className="app login-page"><section className="card"><AuthRecoveryPanel mode={recoveryMode} auth={supabase?.auth || null} redirectTo={getEmailRedirectUrl()} onSupabaseReady={setSupabase} onBack={leaveRecovery} onComplete={leaveRecovery} /></section></main></React.Suspense></BetaChrome>;
   }
 
-  if (!activeYearBankReady && !showAccountLogin && !adminRouteActive && !premiumSalesRouteActive) return <BetaChrome recoveryMessages={recoveryMessages}><React.Suspense fallback={null}><UnsupportedYearScreen year={activeStudentYear} profiles={childProfiles} activeChildId={activeChildId} onSelectChild={handleSelectChild} onAccountLogin={() => setShowAccountLogin(true)} /></React.Suspense></BetaChrome>;
+  if (!activeYearBankReady && !showAccountLogin && !adminRouteActive && !premiumSalesRouteActive) return <BetaChrome recoveryMessages={recoveryMessages}><React.Suspense fallback={null}><UnsupportedYearScreen profiles={childProfiles} activeChildId={activeChildId} onSelectChild={handleSelectChild} onAccountLogin={setShowAccountLogin} /></React.Suspense></BetaChrome>;
 
   if (showOnboarding && !showAccountLogin) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><FirstRunWizard profile={profile} onComplete={completeOnboarding} onAccountLogin={() => setShowAccountLogin(true)} /></BetaChrome>;
 
