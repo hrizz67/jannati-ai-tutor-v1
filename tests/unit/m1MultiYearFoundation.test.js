@@ -33,6 +33,8 @@ describe('M1 multi-year foundation: fail-closed, no rollout', () => {
   });
 
   it('rejects unknown, ambiguous and mismatched curricula without Year 2 fallback', () => {
+    expect(resolveCurriculumBank()).toBeNull();
+    expect(() => requireCurriculumBank()).toThrow(/Unsupported or ambiguous/);
     expect(resolveCurriculumBank({ year: 'Tahun 4' })).toBeNull();
     expect(resolveCurriculumBank({ year: 'Tahun 1', curriculumId: LEGACY_CURRICULUM_ID })).toBeNull();
     expect(() => requireCurriculumBank({ year: 'Tahun 3' }, { requireReady: true }))
