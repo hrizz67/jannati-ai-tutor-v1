@@ -10,7 +10,7 @@
 
 1. Profile years absent in historical stored data retain existing Year 2 compatibility.
 2. Any **explicit non-Year-2 profile** is refused access to the Year 2 question screens: a clear unavailable-year message is rendered before loading/quiz/dashboard routes.
-3. The normal selected-subject and all-subject background preload paths now use the M1-A `loadYearScopedSubjectData` / `loadYearScopedSubjects` APIs with an explicitly passed active year, and their async failure paths do not display an unrelated fallback subject.
+3. The normal selected-subject and all-subject background preload paths now use the M1-A `loadYearScopedSubjectData` / `loadYearScopedSubjects` APIs with an explicitly passed active year, and their async failure paths do not display an unrelated fallback subject. A year-change ref discards stale background preload completions.
 4. Existing direct `loadSubjectData` calls in recovery and adaptive action handlers are not yet changed. These remain reachable for existing Year 2 paths, and must be covered by the next integration gate before a new year can become ready.
 5. The selector still exposes **only Year 2**. No new curriculum questions, database changes, migration, parent reports, new reward logic or release changes.
 
