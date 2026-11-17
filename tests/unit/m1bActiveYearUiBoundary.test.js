@@ -19,6 +19,7 @@ describe('M1-B active-year UI subject boundary', () => {
     expect(source).toMatch(/loadYearScopedSubjectData\(\{\s+year: activeStudentYear,\s+subjectId: selectedSubjectId\s+\}\)/);
     expect(source).toMatch(/if \(!activeYearBankReady\) return Promise\.resolve\(\[\]\);/);
     expect(source).toMatch(/loadYearScopedSubjects\(\{\s+year: activeStudentYear\s+\}\)/);
+    expect(source).toContain('activeStudentYearRef.current !== activeStudentYear');
   });
 
   it('preserves safe failure for planned years and unknown subjects', async () => {
