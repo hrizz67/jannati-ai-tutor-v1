@@ -69,4 +69,3 @@ describe('v3.13.43 production release preparation parity', () => {
     expect(inherited.VITE_STT_ENDPOINT).toBe('https://inherited.invalid');
   });
 });
-});
