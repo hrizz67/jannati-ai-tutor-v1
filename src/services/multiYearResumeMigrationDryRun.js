@@ -184,13 +184,13 @@ export function inspectMultiYearResumeMigration(snapshot = {}, selection = {}) {
       continue;
     }
     for (const [scope, value] of Object.entries(records)) {
-      if (!objectRecord(value) || !Number.isFinite(Date.parse(value.clearedAt || ''))) {
-        findings.push({ code: 'invalid_tombstone_record', source });
-        continue;
-      }
+      // Even an invalid deletion marker must prevent optimistic resurrection.
       protectedScopes.add(scope);
       if (source === RESUME_TOMBSTONES_KEY) counts.tombstones += 1;
       else counts.pendingTombstones += 1;
+      if (!objectRecord(value) || !Number.isFinite(Date.parse(value.clearedAt || ''))) {
+        findings.push({ code: 'invalid_tombstone_record', source });
+      }
     }
   }
 
