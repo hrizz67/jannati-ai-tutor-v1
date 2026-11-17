@@ -61,9 +61,18 @@ describe('M1-F recovery design-only snapshot comparisons', () => {
     expect(result).toMatchObject({
       status: 'HOLD', exactMatch: true, readOnly: true,
       canApply: false, canRestore: false, proposedWrites: 0, proposedDeletes: 0,
-      verifiedKeyTypes: MIGRATION_RECOVERY_STORAGE_KEYS.length, findings: []
+      checkedKeyTypes: MIGRATION_RECOVERY_STORAGE_KEYS.length, verifiedKeyTypes: 4, findings: []
     });
     expect(MIGRATION_RECOVERY_STAGES.length).toBeGreaterThanOrEqual(8);
+  });
+
+  it('does not treat two empty snapshots as a valid rollback comparison', () => {
+    const result = compareMultiYearRollbackSnapshots({}, {});
+    expect(result).toMatchObject({
+      exactMatch: false, verifiedKeyTypes: 0,
+      canApply: false, canRestore: false
+    });
+    expect(result.findings).toContainEqual({ code: 'no_protected_snapshot_data' });
   });
 
   it('rejects a changed answer byte-for-byte without printing the learner answer', () => {
