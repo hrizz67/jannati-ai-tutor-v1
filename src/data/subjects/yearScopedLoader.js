@@ -3,8 +3,15 @@ import { loadSubjectData, subjectList } from './index.js';
 
 // Opt-in guarded entrypoint for future years. The legacy API stays unchanged
 // until migration/rollout gates explicitly approve it.
+function requireExplicitReadyYear(year, curriculumId) {
+  if (typeof year !== 'string' || !year.trim()) {
+    throw new Error('Missing explicit student year for year-scoped content.');
+  }
+  return requireCurriculumBank({ year, curriculumId }, { requireReady: true });
+}
+
 export async function loadYearScopedSubjectData({ year, curriculumId, subjectId } = {}) {
-  requireCurriculumBank({ year, curriculumId }, { requireReady: true });
+  requireExplicitReadyYear(year, curriculumId);
   const id = String(subjectId || '').trim();
   if (!subjectList.some(subject => subject.id === id)) {
     throw new Error(`Unknown subject ID: ${id || '(missing)'}.`);
@@ -13,6 +20,6 @@ export async function loadYearScopedSubjectData({ year, curriculumId, subjectId 
 }
 
 export async function loadYearScopedSubjects({ year, curriculumId } = {}) {
-  requireCurriculumBank({ year, curriculumId }, { requireReady: true });
+  requireExplicitReadyYear(year, curriculumId);
   return Promise.all(subjectList.map(subject => loadSubjectData(subject.id)));
 }
