@@ -1418,6 +1418,10 @@ function buildPredictionGreeting(profile, predictionProfile, readiness, studyPla
 
 export default function App() {
   const [profile, setProfile] = useState(loadStoredStudentCore);
+  // M1-B: legacy profiles without a year remain Year 2, but an explicit
+  // unsupported/planned year must never display Year 2 questions.
+  const activeStudentYear = String(profile?.year || 'Tahun 2').trim();
+  const activeYearBankReady = activeStudentYear === 'Tahun 2';
   const [adaptiveProfile, setAdaptiveProfile] = useState(() => loadAdaptiveStudentProfile(getStoredLearningIdentity(loadProfile())));
   const [gamificationProfile, setGamificationProfile] = useState(() => loadGamificationState(getStoredLearningIdentity(loadProfile())));
   const [resume, setResume] = useState(() => loadResume(getStoredLearningIdentity(loadProfile())));
@@ -3272,18 +3276,42 @@ export default function App() {
   useEffect(() => {
     let alive = true;
     setLoadingSubject(true);
-    loadSubjectData(selectedSubjectId).then(subject => {
-      if (!alive) return;
-      setSelectedSubject(subject);
-      setAllSubjects(current => mergeLoadedSubjects(current, [subject]));
+    // Fail closed on an explicit Year 1/3 profile. Never fetch the Year 2
+    // bank as an implicit fallback for a different year.
+    if (!activeYearBankReady) {
+      allSubjectsLoadRef.current = null;
+      setSelectedSubject(null);
+      setAllSubjects([]);
       setLoadingSubject(false);
-    });
+      return () => { alive = false; };
+    }
+    import('./data/yearScopedSubjectLoader.js')
+      .then(({ loadYearScopedSubjectData }) => loadYearScopedSubjectData({
+        year: activeStudentYear,
+        subjectId: selectedSubjectId
+      }))
+      .then(subject => {
+        if (!alive) return;
+        setSelectedSubject(subject);
+        setAllSubjects(current => mergeLoadedSubjects(current, [subject]));
+        setLoadingSubject(false);
+      })
+      .catch(() => {
+        if (!alive) return;
+        setSelectedSubject(null);
+        setLoadingSubject(false);
+        setRecoveryMessages(prev => [...prev, 'Bank soalan tidak dapat dimuatkan. Sila cuba semula.']);
+      });
     return () => { alive = false; };
-  }, [selectedSubjectId]);
+  }, [selectedSubjectId, activeStudentYear, activeYearBankReady]);
 
   function ensureAllSubjectsLoaded() {
+    if (!activeYearBankReady) return Promise.resolve([]);
     if (!allSubjectsLoadRef.current) {
-      allSubjectsLoadRef.current = loadAllSubjects()
+      allSubjectsLoadRef.current = import('./data/yearScopedSubjectLoader.js')
+        .then(({ loadYearScopedSubjects }) => loadYearScopedSubjects({
+          year: activeStudentYear
+        }))
         .then(subjects => {
           setAllSubjects(subjects);
           return subjects;
@@ -5433,6 +5461,7 @@ export default function App() {
 
   if (adminRouteActive) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={false} currentScreen="admin-premium"><ProductionErrorBoundary fallback={<EmptyState title="Konsol Admin tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba semula." actionLabel="Papan Utama" onAction={closeAdminPremium} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Konsol Admin sedang dimuat</h2></div>}><AdminPremiumPage supabase={supabase} accountUser={accountUser} onBack={closeAdminPremium} onEntitlementChanged={() => refreshEntitlementRef.current?.()} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
 
+  if (!activeYearBankReady) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={false} currentScreen="year-not-ready"><main className="app"><EmptyState title="Tahun pembelajaran belum tersedia." message="Bank soalan bagi tahun profil ini belum diluluskan. Kandungan Tahun 2 tidak akan digunakan sebagai ganti." actionLabel="Pilih profil lain" onAction={() => { setShowAccountLogin(true); setScreen('login'); }} /></main></BetaChrome>;
   if (loadingSubject) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><LoadingSkeleton /></BetaChrome>;
   if (!selectedSubject) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><main className="app"><EmptyState title="Subjek tidak dijumpai." message="Pilih semula subjek daripada Papan Utama." actionLabel="Kembali ke Papan Utama" onAction={() => { setSelectedSubjectId('bm'); setScreen('dashboard'); }} /></main></BetaChrome>;
 
