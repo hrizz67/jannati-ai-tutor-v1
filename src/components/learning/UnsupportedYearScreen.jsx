@@ -3,7 +3,6 @@ import React from 'react';
 // Loaded only when the stored child year has no approved question bank.
 // Changing a child goes through App's existing snapshot-safe switch handler.
 export default function UnsupportedYearScreen({
-  year = '',
   profiles = [],
   activeChildId = '',
   onSelectChild,
@@ -20,7 +19,7 @@ export default function UnsupportedYearScreen({
       <section className="card">
         <h1 id="year-unavailable-heading">Tahun belum tersedia</h1>
         <p role="status">
-          Bank soalan {year || 'tahun ini'} belum diluluskan.
+          Bank soalan tahun ini belum diluluskan.
           Soalan Tahun 2 tidak akan dipaparkan untuk profil ini.
         </p>
         {available.length > 0 ? (
@@ -39,7 +38,7 @@ export default function UnsupportedYearScreen({
         ) : (
           <p>Tiada profil Tahun 2 lain yang tersedia pada akaun ini.</p>
         )}
-        <button className="secondary" type="button" onClick={onAccountLogin}>
+        <button className="secondary" type="button" onClick={() => onAccountLogin?.(true)}>
           Log masuk atau gunakan profil lain
         </button>
       </section>
