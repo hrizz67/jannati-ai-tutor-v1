@@ -18,11 +18,12 @@ describe('M1-B active-year UI subject boundary', () => {
   });
 
   it('guards the existing Year 2 loader and cancels stale background results', () => {
-    expect(source).toMatch(/if \(!activeYearBankReady\) \{\s+allSubjectsLoadRef\.current = null;\s+setSelectedSubject\(null\);\s+setAllSubjects\(\[\]\);/);
-    expect(source).toMatch(/loadSubjectData\(selectedSubjectId\)\.then\(subject =>/);
-    expect(source).toMatch(/if \(!activeYearBankReady\) return Promise\.resolve\(\[\]\);/);
-    expect(source).toContain('allSubjectsLoadRef.current = loadAllSubjects()');
-    expect(source).toContain('activeStudentYearRef.current !== activeStudentYear');
+    expect(source).toContain('if (!activeYearBankReady || !subjectLoadGateRef.current.isCurrent(lease))');
+    expect(source).toContain('loadYear2SubjectForLease(selectedSubjectId, lease).then(subject =>');
+    expect(source).toContain('if (!subjectLoadGateRef.current.isCurrent(lease)) return Promise.resolve([]);');
+    expect(source).toContain('const request = loadAllSubjects()');
+    expect(source).toContain('subjectLoadGateRef.current.setOwner({');
+    expect(source).toContain('if (!subjectLoadGateRef.current.isCurrent(lease)) return [];');
   });
 
   it('preserves safe failure for planned years and unknown subjects', async () => {

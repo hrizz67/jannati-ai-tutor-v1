@@ -1371,7 +1371,8 @@ assert.doesNotMatch(dashboardSource, /\b(?:reviewedInteractiveActivitySource|int
 assert.ok(dashboardSource.includes('Aktiviti Interaktif'), 'The dashboard must expose an explicit interactive-practice action.');
 assert.match(dashboardSource, /onStartTopic\(interactiveActivityTopic, selectedSubject, \{ preserveQuestions: true, mode: 'interactive-practice'/, 'The CTA must launch the composed questions unchanged in interactive-practice mode.');
 assert.ok(appSource.includes("['quiz', 'adaptive-practice', 'adaptive-lesson', 'interactive-practice'].includes(mode)"), 'App must recognize interactive-practice as a resumable question mode.');
-assert.ok(appSource.includes('startInteractivePracticeResume(targetResume)'), 'Interactive-practice resume must use the saved session instead of composing again.');
+assert.ok(appSource.includes('startInteractivePracticeResume(targetResume, {}, lease)'), 'Interactive-practice resume must use saved questions with the current child/year lease.');
+assert.ok(appSource.includes('const subject = await loadYear2SubjectForLease(targetResume.subjectId, lease)'), 'Interactive-practice resume must reject a stale child/year subject before using saved questions.');
 assert.ok(appSource.includes('rehydrateInteractivePracticeQuestions(subject, targetResume.questions)'), 'Interactive-practice resume must rehydrate the saved question IDs from the real subject.');
 assert.ok(composerSource.includes('new Map(flattenSubjectQuestions(subject).map(candidate => [candidate.id, candidate.question]))'), 'Mixed-topic resume must build its current-bank lookup across all subject topics.');
 assert.ok(composerSource.includes('savedQuestions) ? savedQuestions : []).map'), 'Mixed-topic resume must preserve the saved question order while rehydrating by ID.');

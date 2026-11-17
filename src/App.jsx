@@ -20,6 +20,7 @@ import JannaAvatar from './components/JannaAvatar';
 import JatiAvatar from './components/JatiAvatar';
 import VoiceButton from './components/VoiceButton.jsx';
 import QuizFeedbackAccessibility from './components/questions/QuizFeedbackAccessibility.jsx';
+import { createYear2AsyncOwnerGate } from './services/yearOwnedAsyncSubjectGate.js';
 const QuizSpeechConsent = React.lazy(() => import('./components/speech/QuizSpeechConsent.jsx'));
 const QuizDiagnosticsPanel = React.lazy(() => import('./components/questions/QuizDiagnosticsPanel.jsx'));
 const BetaFeedbackButton = React.lazy(() => import('./components/feedback/BetaFeedbackButton.jsx'));
@@ -1425,8 +1426,6 @@ export default function App() {
   // unsupported/planned year must never display Year 2 questions.
   const activeStudentYear = String(profile?.year || 'Tahun 2').trim();
   const activeYearBankReady = activeStudentYear === 'Tahun 2';
-  const activeStudentYearRef = useRef(activeStudentYear);
-  activeStudentYearRef.current = activeStudentYear;
   const [adaptiveProfile, setAdaptiveProfile] = useState(() => loadAdaptiveStudentProfile(getStoredLearningIdentity(loadProfile())));
   const [gamificationProfile, setGamificationProfile] = useState(() => loadGamificationState(getStoredLearningIdentity(loadProfile())));
   const [resume, setResume] = useState(() => loadResume(getStoredLearningIdentity(loadProfile())));
@@ -1494,6 +1493,15 @@ export default function App() {
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [allSubjects, setAllSubjects] = useState([]);
   const allSubjectsLoadRef = useRef(null);
+  const subjectLoadGateRef = useRef(null);
+  if (!subjectLoadGateRef.current) subjectLoadGateRef.current = createYear2AsyncOwnerGate();
+  // Update on every render: async completions compare against the *current*
+  // account, child and grade, not the closure from the old learning screen.
+  if (subjectLoadGateRef.current.setOwner({
+    accountId: learningIdentity.accountId,
+    childId: activeChildId,
+    year: activeStudentYear
+  })) allSubjectsLoadRef.current = null;
   const [loadingSubject, setLoadingSubject] = useState(true);
   const [activeSubject, setActiveSubject] = useState(null);
   const [activeTopic, setActiveTopic] = useState(null);
@@ -2193,6 +2201,9 @@ export default function App() {
       setResume(null);
       captureChildSnapshot(target.id);
     }
+    // Snapshot checks have succeeded. Cancel old async work only for a
+    // committed switch; a rejected switch must not strand the current loader.
+    subjectLoadGateRef.current.invalidate();
     repairImportedLearningProfile();
     localStorage.setItem(ACTIVE_CHILD_KEY, target.id);
     clearTransientChildState();
@@ -2261,6 +2272,7 @@ export default function App() {
       setGamificationProfile(resetGamificationProfile());
       resetSmartQuestionState();
       localStorage.setItem(ACTIVE_CHILD_KEY, nextChild.id);
+      subjectLoadGateRef.current.invalidate();
       clearTransientChildState();
       setChildProfiles(nextProfiles);
       setActiveChildId(nextChild.id);
@@ -3278,40 +3290,57 @@ export default function App() {
     setGamificationProfile(updated);
   }
 
+  // Reject a subject response as soon as the account, child, year or request
+  // epoch changes. All historical Year 2 subject data loads remain unchanged.
+  async function loadYear2SubjectForLease(subjectId, lease = subjectLoadGateRef.current.capture()) {
+    if (!subjectLoadGateRef.current.isCurrent(lease)) return null;
+    const subject = await loadSubjectData(subjectId);
+    return subjectLoadGateRef.current.isCurrent(lease) ? subject : null;
+  }
+
   useEffect(() => {
     let alive = true;
+    const lease = subjectLoadGateRef.current.capture();
     setLoadingSubject(true);
-    if (!activeYearBankReady) {
+    setSelectedSubject(null);
+    setAllSubjects([]);
+    if (!activeYearBankReady || !subjectLoadGateRef.current.isCurrent(lease)) {
       allSubjectsLoadRef.current = null;
-      setSelectedSubject(null);
-      setAllSubjects([]);
       setLoadingSubject(false);
       return () => { alive = false; };
     }
-    // Year 2 remains the sole ready bank in this limited compatibility gate.
-    loadSubjectData(selectedSubjectId).then(subject => {
-      if (!alive) return;
+    // A previous child can finish loading after a profile switch. Never mount
+    // that child's questions into a new child's dashboard.
+    loadYear2SubjectForLease(selectedSubjectId, lease).then(subject => {
+      if (!alive || !subject || !subjectLoadGateRef.current.isCurrent(lease)) return;
       setSelectedSubject(subject);
       setAllSubjects(current => mergeLoadedSubjects(current, [subject]));
       setLoadingSubject(false);
+    }).catch(() => {
+      if (!alive || !subjectLoadGateRef.current.isCurrent(lease)) return;
+      setLoadingSubject(false);
+      setRecoveryMessages(prev => [...prev, 'Subjek belum dapat dimuat. Cuba pilih semula subjek.']);
     });
     return () => { alive = false; };
-  }, [selectedSubjectId, activeYearBankReady]);
+  }, [selectedSubjectId, activeYearBankReady, activeChildId, accountUser?.id, activeStudentYear]);
 
   function ensureAllSubjectsLoaded() {
-    if (!activeYearBankReady) return Promise.resolve([]);
+    const lease = subjectLoadGateRef.current.capture();
+    if (!subjectLoadGateRef.current.isCurrent(lease)) return Promise.resolve([]);
     if (!allSubjectsLoadRef.current) {
-      allSubjectsLoadRef.current = loadAllSubjects()
+      const request = loadAllSubjects()
         .then(subjects => {
-          if (activeStudentYearRef.current !== activeStudentYear) return [];
+          if (!subjectLoadGateRef.current.isCurrent(lease)) return [];
           setAllSubjects(subjects);
           return subjects;
         })
         .catch(() => {
-          allSubjectsLoadRef.current = null;
+          if (!subjectLoadGateRef.current.isCurrent(lease)) return [];
+          if (allSubjectsLoadRef.current === request) allSubjectsLoadRef.current = null;
           setRecoveryMessages(prev => [...prev, 'Data semua subjek belum dapat dipramuat. Subjek semasa masih boleh digunakan.']);
           return [];
         });
+      allSubjectsLoadRef.current = request;
     }
     return allSubjectsLoadRef.current;
   }
@@ -3859,13 +3888,15 @@ export default function App() {
     return ['quiz', 'adaptive-practice', 'adaptive-lesson', 'interactive-practice'].includes(mode);
   }
 
-  async function startInteractivePracticeResume(targetResume, { restart = false } = {}) {
-    const subject = await loadSubjectData(targetResume.subjectId);
+  async function startInteractivePracticeResume(targetResume, { restart = false } = {}, lease = subjectLoadGateRef.current.capture()) {
+    if (!subjectLoadGateRef.current.isCurrent(lease)) return false;
+    const subject = await loadYear2SubjectForLease(targetResume.subjectId, lease);
     if (!subject) return false;
     const {
       rehydrateInteractivePracticeQuestions,
       resolveInteractivePracticeResumeIndex
     } = await import('./ai/question/interactiveSessionComposer.js');
+    if (!subjectLoadGateRef.current.isCurrent(lease)) return false;
     const savedQuestions = Array.isArray(targetResume.questions) ? targetResume.questions : [];
     const questions = rehydrateInteractivePracticeQuestions(subject, targetResume.questions);
     const savedIndex = Number.isInteger(targetResume.currentIndex)
@@ -3930,6 +3961,7 @@ export default function App() {
   }
 
   function startTopic(topic, subject = selectedSubject, options = {}) {
+    if (!subjectLoadGateRef.current.isCurrent(subjectLoadGateRef.current.capture())) return;
     const resumeMode = options.mode || 'quiz';
     const quotaSubjectId = resolveQuestionQuotaSubjectId(
       {},
@@ -4103,6 +4135,8 @@ export default function App() {
   }
 
   async function startResume(resumeToStart = resume) {
+    const lease = subjectLoadGateRef.current.capture();
+    if (!subjectLoadGateRef.current.isCurrent(lease)) return;
     const targetResume = normalizeResumeData(resumeToStart);
     if (!targetResume || targetResume.completed) return;
     setResume(targetResume);
@@ -4120,7 +4154,7 @@ export default function App() {
         answers: Array.isArray(targetResume.answers) ? targetResume.answers : targetResume.session?.answers || []
       };
       if ((targetResume.mode || 'quiz') === 'interactive-practice') {
-        await startInteractivePracticeResume(targetResume);
+        await startInteractivePracticeResume(targetResume, {}, lease);
         return;
       }
       if ((targetResume.mode || 'quiz') === 'adaptive-practice') {
@@ -4154,7 +4188,8 @@ export default function App() {
         };
         const practiceTopic = practiceSubject.topics[0];
         const quotaSubject = allSubjects.find(item => item.id === quotaSubjectId)
-          || (quotaSubjectId ? await loadSubjectData(quotaSubjectId) : null);
+          || (quotaSubjectId ? await loadYear2SubjectForLease(quotaSubjectId, lease) : null);
+        if (!subjectLoadGateRef.current.isCurrent(lease)) return;
         if (quotaSubject) syncSelectedSubjectState(quotaSubject);
         startTopic(practiceTopic, practiceSubject, {
           questions: targetResume.questions,
@@ -4170,7 +4205,7 @@ export default function App() {
         });
         return;
       }
-      const subject = await loadSubjectData(targetResume.subjectId);
+      const subject = await loadYear2SubjectForLease(targetResume.subjectId, lease);
       const topic = subject?.topics.find(t => t.id === targetResume.topicId);
       if (!subject || !topic) return;
       // Resume data may contain a question surface generated by an older
@@ -4199,15 +4234,18 @@ export default function App() {
     }
     if (['uasa', 'reading', 'listening', 'speaking', 'writing'].includes(targetResume.mode)) {
       if (targetResume.mode === 'uasa' && targetResume.subjectId !== selectedSubjectId) {
-        const targetSubject = await loadSubjectData(targetResume.subjectId);
+        const targetSubject = await loadYear2SubjectForLease(targetResume.subjectId, lease);
+        if (!subjectLoadGateRef.current.isCurrent(lease)) return;
         if (targetSubject) syncSelectedSubjectState(targetSubject);
       }
+      if (!subjectLoadGateRef.current.isCurrent(lease)) return;
       setScreen(targetResume.mode);
     }
   }
 
   async function restartResume() {
-    if (!resume) return;
+    const lease = subjectLoadGateRef.current.capture();
+    if (!resume || !subjectLoadGateRef.current.isCurrent(lease)) return;
     const targetResume = resume;
     const mode = targetResume.mode || 'quiz';
     if (isQuestionResumeMode(mode)) {
@@ -4224,7 +4262,7 @@ export default function App() {
     }
     clearResumeData(setResume, targetResume, learningIdentity);
     if (mode === 'interactive-practice') {
-      await startInteractivePracticeResume(targetResume, { restart: true });
+      await startInteractivePracticeResume(targetResume, { restart: true }, lease);
       return;
     }
     if (mode === 'adaptive-practice') {
@@ -4232,7 +4270,7 @@ export default function App() {
       return;
     }
     if (isQuestionResumeMode(mode)) {
-      const subject = await loadSubjectData(targetResume.subjectId);
+      const subject = await loadYear2SubjectForLease(targetResume.subjectId, lease);
       const topic = subject?.topics.find(t => t.id === targetResume.topicId);
       if (subject && topic) {
         syncSelectedSubjectState(subject);
@@ -4247,11 +4285,15 @@ export default function App() {
   }
 
   async function startAdaptiveLesson(recommendation) {
+    const lease = subjectLoadGateRef.current.capture();
+    if (!subjectLoadGateRef.current.isCurrent(lease)) return;
     const subjectId = recommendation?.nextSubject || recommendation?.subjectId;
     const topicId = recommendation?.nextTopic || recommendation?.topicId;
     const questionId = recommendation?.nextQuestionId || recommendation?.questionId;
     if (!subjectId || !topicId) return;
-    const subject = allSubjects.find(item => item.id === subjectId) || await loadSubjectData(subjectId);
+    const subject = allSubjects.find(item => item.id === subjectId)
+      || await loadYear2SubjectForLease(subjectId, lease);
+    if (!subjectLoadGateRef.current.isCurrent(lease)) return;
     const topic = subject?.topics.find(item => item.id === topicId);
     if (!subject || !topic) return;
     syncSelectedSubjectState(subject);
@@ -4281,6 +4323,8 @@ export default function App() {
   }
 
   async function startAdaptivePractice(questionCount = adaptivePracticeCount, options = {}) {
+    const lease = subjectLoadGateRef.current.capture();
+    if (!subjectLoadGateRef.current.isCurrent(lease)) return false;
     const requestedChildId = String(options.childId || '').trim();
     const currentChildId = String(activeChildId || readActiveChildId() || '').trim();
     if (requestedChildId && requestedChildId !== currentChildId) {
@@ -4308,7 +4352,7 @@ export default function App() {
     const resumeMatchesSelectedSubject = Boolean(resumeSubjectId && resumeSubjectId === targetSubjectId);
     if (resumeMatchesSelectedSubject && practiceResume && !practiceResume.completed && Array.isArray(practiceResume.questions) && practiceResume.questions.length) {
       await startResume(practiceResume);
-      return true;
+      return subjectLoadGateRef.current.isCurrent(lease);
     }
     const subjectDailyQuestionCount = getSubjectDailyQuestionCount(targetSubjectId);
     if (!isPremiumUser && subjectDailyQuestionCount >= FREE_DAILY_QUESTION_LIMIT) {
@@ -4322,8 +4366,10 @@ export default function App() {
     let practiceSubjects = allSubjects;
     if (practiceSubjects.length < subjectList.length) {
       const loadedSubjects = await ensureAllSubjectsLoaded();
+      if (!subjectLoadGateRef.current.isCurrent(lease)) return false;
       if (loadedSubjects.length) practiceSubjects = loadedSubjects;
     }
+    if (!subjectLoadGateRef.current.isCurrent(lease)) return false;
     if (!practiceSubjects.length || !practiceSubjects.some(subject => subject?.id === targetSubjectId)) return false;
     const session = buildAdaptivePracticeSession(profile, practiceSubjects, {
       questionCount: allowedQuestionCount,
@@ -4578,7 +4624,9 @@ export default function App() {
   }
 
   function handleSelectSubject(subjectId) {
-    if (!subjectId) return;
+    if (!subjectId || !subjectLoadGateRef.current.isCurrent(subjectLoadGateRef.current.capture())) return;
+    // A new subject selection must not be overwritten by an older resume.
+    subjectLoadGateRef.current.invalidate();
     setSelectedSubjectId(subjectId);
     setScreen('dashboard');
   }
