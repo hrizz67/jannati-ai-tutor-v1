@@ -11,7 +11,7 @@ No Year 1 or Year 3 content is authored, loaded or made selectable. Curriculum m
 | File | Contract |
 | --- | --- |
 | `src/config/curriculumBankCatalog.js` | Year + curriculum pair with `planned` / `ready` status. Only Year 2 KSSR-current is ready |
-| `src/data/subjects/yearScopedLoader.js` | Opt-in guarded loader. Unready/unknown combinations fail closed; never use BM as the fallback for a planned year |
+| `src/data/yearScopedSubjectLoader.js` | Opt-in guarded loader. Unready/unknown combinations fail closed; never use BM as the fallback for a planned year |
 | `src/services/yearScopedLearningKeys.js` | Helpers for year/curriculum-scoped progress and Tutor conversation identifiers |
 | `tests/unit/m1MultiYearFoundation.test.js` | Guards for Year 2 backward compatibility, Year 1/3 denial, ID separation, 4,530 unchanged questions |
 
