@@ -132,6 +132,18 @@ describe('M1-E resume migration dry-run invariants', () => {
     expect(report.canApply).toBe(false);
   });
 
+  it('treats malformed deletion markers as protected rather than reviving the session', () => {
+    const old = resume();
+    const scope = getResumeScopeKey(old);
+    const report = inspectMultiYearResumeMigration(storage(collection(old), {
+      [RESUME_PENDING_TOMBSTONES_KEY]: JSON.stringify({ [scope]: { clearedAt: 'not-a-date' } })
+    }), year2);
+    expect(report.counts.pendingTombstones).toBe(1);
+    expect(report.counts.plannedKeys).toBe(0);
+    expect(report.findings.map(item => item.code)).toContain('invalid_tombstone_record');
+    expect(report.findings.map(item => item.code)).toContain('tombstone_prevents_revival');
+  });
+
   it('retains orphan tombstone evidence without deleting anything', () => {
     const tombstone = { accountId: 'family', childId: 'child-a', clearedAt: '2026-10-03T10:00:00Z' };
     const report = inspectMultiYearResumeMigration({
