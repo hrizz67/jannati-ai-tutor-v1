@@ -244,7 +244,10 @@ describe('P1.15B1 public auth recovery UX', () => {
 
   it('preserves P1.15A internal-surface containment', () => {
     expect(containmentSource).toContain('isInternalUiSurfaceEnabled');
-    expect(appSource).toContain('isInternalUiSurfaceEnabled() && <BetaFeedbackButton');
-    expect(appSource).toContain('isInternalUiSurfaceEnabled() && <details className="qde-debug-panel"');
+    expect(appSource).toContain('isInternalUiSurfaceEnabled() && <React.Suspense');
+    expect(appSource).toContain('<BetaFeedbackButton suppressed={feedbackSuppressed}');
+    expect(appSource).toContain('<QuizDiagnosticsPanel qipRow={qipRow}');
+    expect(appSource).toContain("React.lazy(() => import('./components/feedback/BetaFeedbackButton.jsx'))");
+    expect(appSource).toContain("React.lazy(() => import('./components/questions/QuizDiagnosticsPanel.jsx'))");
   });
 });
