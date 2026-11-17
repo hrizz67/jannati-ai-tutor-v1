@@ -9,7 +9,9 @@ describe('M1-B active-year UI subject boundary', () => {
     expect(source).toContain("const activeStudentYear = String(profile?.year || 'Tahun 2').trim()");
     expect(source).toContain("const activeYearBankReady = activeStudentYear === 'Tahun 2'");
     expect(source).toContain("if (!activeYearBankReady && !showAccountLogin && !adminRouteActive && !premiumSalesRouteActive) return <BetaChrome");
-    expect(source).toContain('Soalan Tahun 2 tidak ditunjukkan.');
+    expect(source).toContain("React.lazy(() => import('./components/learning/UnsupportedYearScreen.jsx'))");
+    const unavailableScreenSource = readFileSync('src/components/learning/UnsupportedYearScreen.jsx', 'utf8');
+    expect(unavailableScreenSource).toContain('Soalan Tahun 2 tidak akan dipaparkan untuk profil ini.');
     expect(source.indexOf('if (!activeYearBankReady && !showAccountLogin')).toBeLessThan(source.indexOf('if (showOnboarding && !showAccountLogin)'));
     expect(source.indexOf('if (!activeYearBankReady && !showAccountLogin')).toBeLessThan(source.indexOf('if (loadingSubject) return <BetaChrome'));
     expect(source.indexOf('if (!activeYearBankReady && !showAccountLogin')).toBeLessThan(source.indexOf("if (screen === 'quiz') {\n    const question = currentQuestion()"));

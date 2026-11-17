@@ -24,6 +24,7 @@ import QuizSpeechConsent from './components/speech/QuizSpeechConsent.jsx';
 import CommunicationContentErrorFallback from './components/communication/CommunicationContentErrorFallback.jsx';
 import { renderSubjectQuestionText } from './components/SubjectLanguageText.jsx';
 const TutorAIModal = React.lazy(() => import('./components/ai/TutorAIModal.jsx'));
+const UnsupportedYearScreen = React.lazy(() => import('./components/learning/UnsupportedYearScreen.jsx'));
 // Tutor context must follow the currently selected dashboard subject, not a stale quiz.
 import { resolveTutorChatSubject } from './utils/tutorChatSubject.js';
 const DeferredIconGlyph = React.lazy(() => import('./components/IconGlyph.jsx'));
@@ -5437,7 +5438,7 @@ export default function App() {
     return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={false} currentScreen="password-recovery"><React.Suspense fallback={<main className="app login-page"><section className="card"><p role="status">Menyediakan pemulihan akaun...</p></section></main>}><main className="app login-page"><section className="card"><AuthRecoveryPanel mode={recoveryMode} auth={supabase?.auth || null} redirectTo={getEmailRedirectUrl()} onSupabaseReady={setSupabase} onBack={leaveRecovery} onComplete={leaveRecovery} /></section></main></React.Suspense></BetaChrome>;
   }
 
-  if (!activeYearBankReady && !showAccountLogin && !adminRouteActive && !premiumSalesRouteActive) return <BetaChrome recoveryMessages={recoveryMessages}><main className="app"><EmptyState title="Tahun belum tersedia." message="Bank tahun ini belum sedia. Soalan Tahun 2 tidak ditunjukkan." actionLabel="Tukar profil" onAction={() => { setShowAccountLogin(true); setScreen('login'); }} /></main></BetaChrome>;
+  if (!activeYearBankReady && !showAccountLogin && !adminRouteActive && !premiumSalesRouteActive) return <BetaChrome recoveryMessages={recoveryMessages}><React.Suspense fallback={null}><UnsupportedYearScreen profiles={childProfiles} activeChildId={activeChildId} onSelectChild={handleSelectChild} onAccountLogin={setShowAccountLogin} /></React.Suspense></BetaChrome>;
 
   if (showOnboarding && !showAccountLogin) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><FirstRunWizard profile={profile} onComplete={completeOnboarding} onAccountLogin={() => setShowAccountLogin(true)} /></BetaChrome>;
 
