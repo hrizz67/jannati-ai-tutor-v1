@@ -74,7 +74,7 @@ assert.equal(packageJson.scripts?.['release:build-check'], 'node scripts/release
 assert.equal(packageJson.scripts?.['release:smoke'], 'node scripts/release/smokeTestDeployment.mjs');
 assert.match(
   releaseRunner,
-  /Release step 2\/10: validate'[\s\S]{0,200}runNpmScript\('validate', \['--write-reports'\]\)[\s\S]{0,200}Release step 3\/10: verify validation gate'[\s\S]{0,200}verifyValidation\(\)/,
+  /Release step 2\/10: validate'[\s\S]{0,200}runNpmScript\('validate', \['--write-reports'\], getValidationEnvironment\(\)\)[\s\S]{0,200}Release step 3\/10: verify validation gate'[\s\S]{0,200}verifyValidation\(\)/,
   'Release validation must refresh canonical reports before the validation gate reads them.'
 );
 assert.match(ciWorkflow, /actions\/checkout@v7/, 'CI must use the current Node 24 checkout action.');
@@ -90,27 +90,24 @@ assert.match(releasePreparationWorkflow, /if:\s*github\.ref == 'refs\/heads\/mai
 assert.match(releasePreparationWorkflow, /persist-credentials:\s*false/, 'Secure release preparation checkout must not persist Git credentials.');
 assert.match(releasePreparationWorkflow, /\$GITHUB_SHA[^\n]*\$EXPECTED_SHA|\$EXPECTED_SHA[^\n]*\$GITHUB_SHA/, 'Secure release preparation must bind the run to the requested exact main SHA.');
 assert.match(releasePreparationWorkflow, /npm run release -- "\$TARGET_VERSION"/, 'Secure release preparation must use the canonical release command.');
-// The canonical release command validates before building. Suppress STT endpoints and
-// opt-in flags at the process boundary, not merely in the tested application code.
+// Release-preparation must keep STT out of validation and map production
+// flags into the actual build subprocess only (never into the parent VITE env).
 const preparationStart = releasePreparationWorkflow.indexOf('      - name: Run canonical production release preparation');
 const preparationEnd = releasePreparationWorkflow.indexOf('      - name: Verify release artifacts and production bundle', preparationStart);
 assert.ok(preparationStart >= 0 && preparationEnd > preparationStart, 'Release-preparation canonical step must have stable boundaries.');
 const canonicalPreparationStep = releasePreparationWorkflow.slice(preparationStart, preparationEnd);
-assert.doesNotMatch(
-  canonicalPreparationStep,
-  /^\s*VITE_(?:QUIZ_)?STT_ENDPOINT\s*:/m,
-  'Canonical release preparation must not inject STT endpoints into unit tests and validation.'
-);
-assert.doesNotMatch(
-  canonicalPreparationStep,
-  /^\s*VITE_QUIZ_MOBILE_STT_PILOT_ENABLED\s*:/m,
-  'Canonical release preparation must not activate the Quiz STT pilot during validation.'
-);
-assert.match(
-  canonicalPreparationStep,
-  /env -u VITE_STT_ENDPOINT -u VITE_QUIZ_STT_ENDPOINT -u VITE_QUIZ_MOBILE_STT_PILOT_ENABLED npm run release -- "\$TARGET_VERSION"/,
-  'Canonical release preparation must explicitly remove inherited STT settings before running validation.'
-);
+for (const name of ['VITE_STT_ENDPOINT', 'VITE_QUIZ_STT_ENDPOINT', 'VITE_QUIZ_MOBILE_STT_PILOT_ENABLED']) {
+  assert.doesNotMatch(canonicalPreparationStep, new RegExp('^\\s*' + name + '\\s*:', 'm'), 'Canonical preparation must not set validation-visible STT flags.');
+}
+for (const [name, expected] of [
+  ['RELEASE_BUILD_STT_ENDPOINT', productionSttEndpoint.split(': ').slice(1).join(': ')],
+  ['RELEASE_BUILD_QUIZ_STT_ENDPOINT', productionQuizSttEndpoint.split(': ').slice(1).join(': ')],
+  ['RELEASE_BUILD_QUIZ_MOBILE_STT_PILOT_ENABLED', "'true'"]
+]) {
+  assert.ok(canonicalPreparationStep.includes(`${name}: ${expected}`), 'Build-only release flag must exactly match tagged deployment.');
+}
+assert.match(releaseRunner, /runNpmScript\('validate', \['--write-reports'\], getValidationEnvironment\(\)\)/, 'Validation must receive isolated environment.');
+assert.match(releaseRunner, /runNpmScript\('build', \[\], getReleaseBuildEnvironment\(\)\)/, 'Only the production build may receive release STT flags.');
 
 assert.match(releasePreparationWorkflow, /npm run release:check -- --artifacts/, 'Secure release preparation must verify generated release artifacts.');
 assert.match(releasePreparationWorkflow, /npm run release:build-check/, 'Secure release preparation must verify real production browser configuration.');
