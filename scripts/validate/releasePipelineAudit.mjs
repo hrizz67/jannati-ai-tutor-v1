@@ -74,7 +74,7 @@ assert.equal(packageJson.scripts?.['release:build-check'], 'node scripts/release
 assert.equal(packageJson.scripts?.['release:smoke'], 'node scripts/release/smokeTestDeployment.mjs');
 assert.match(
   releaseRunner,
-  /Release step 2\/10: validate'[\s\S]{0,200}runNpmScript\('validate', \['--write-reports'\]\)[\s\S]{0,200}Release step 3\/10: verify validation gate'[\s\S]{0,200}verifyValidation\(\)/,
+  /Release step 2\/10: validate'[\s\S]{0,200}runNpmScript\('validate', \['--write-reports'\], getValidationEnvironment\(\)\)[\s\S]{0,200}Release step 3\/10: verify validation gate'[\s\S]{0,200}verifyValidation\(\)/,
   'Release validation must refresh canonical reports before the validation gate reads them.'
 );
 assert.match(ciWorkflow, /actions\/checkout@v7/, 'CI must use the current Node 24 checkout action.');
