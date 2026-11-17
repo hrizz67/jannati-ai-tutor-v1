@@ -255,7 +255,10 @@ describe('P1.15B2 lazy loading, footer, and mobile containment', () => {
   });
 
   it('keeps P1.15A internal containment active in normal production mode', () => {
-    expect(appSource).toContain('isInternalUiSurfaceEnabled() && <BetaFeedbackButton');
-    expect(appSource).toContain('isInternalUiSurfaceEnabled() && <details className="qde-debug-panel"');
+    expect(appSource).toContain('isInternalUiSurfaceEnabled() && <React.Suspense');
+    expect(appSource).toContain('<BetaFeedbackButton suppressed={feedbackSuppressed}');
+    expect(appSource).toContain('<QuizDiagnosticsPanel qipRow={qipRow}');
+    expect(appSource).toContain("React.lazy(() => import('./components/feedback/BetaFeedbackButton.jsx'))");
+    expect(appSource).toContain("React.lazy(() => import('./components/questions/QuizDiagnosticsPanel.jsx'))");
   });
 });
