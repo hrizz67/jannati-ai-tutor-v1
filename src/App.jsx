@@ -2177,7 +2177,6 @@ export default function App() {
     const target = availableProfiles.find(item => item.id === childId);
     const currentChildId = activeChildId || readActiveChildId();
     if (!target || target.id === currentChildId) return;
-    subjectLoadGateRef.current.invalidate();
     if (currentChildId && !captureChildSnapshot(currentChildId, { force: true })) {
       setRecoveryMessages(prev => [...prev, 'Pertukaran profil dihentikan kerana data profil semasa belum dapat disahkan dan disimpan dengan selamat.']);
       return;
@@ -2202,6 +2201,9 @@ export default function App() {
       setResume(null);
       captureChildSnapshot(target.id);
     }
+    // Snapshot checks have succeeded. Cancel old async work only for a
+    // committed switch; a rejected switch must not strand the current loader.
+    subjectLoadGateRef.current.invalidate();
     repairImportedLearningProfile();
     localStorage.setItem(ACTIVE_CHILD_KEY, target.id);
     clearTransientChildState();
