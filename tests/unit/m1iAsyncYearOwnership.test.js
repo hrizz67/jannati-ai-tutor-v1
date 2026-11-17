@@ -84,6 +84,20 @@ describe('M1-I fail-closed async subject-load ownership', () => {
     expect(app).toContain('const subject = await loadSubjectData(subjectId);'); // only inside the guarded wrapper
   });
 
+  it('invalidates only after a successful child snapshot switch, keeping failed switches responsive', () => {
+    const start = app.indexOf('function handleSelectChild(childId) {');
+    const end = app.indexOf('function handleCreateChild(', start);
+    const handler = app.slice(start, end);
+    expect(handler).toContain('if (!restoreChildSnapshot(snapshot, target.id))');
+    expect(handler).toContain('subjectLoadGateRef.current.invalidate();');
+    expect(handler.indexOf('subjectLoadGateRef.current.invalidate();'))
+      .toBeGreaterThan(handler.indexOf('if (!restoreChildSnapshot(snapshot, target.id))'));
+    expect(handler.indexOf('subjectLoadGateRef.current.invalidate();'))
+      .toBeLessThan(handler.indexOf('setActiveChildId(target.id);'));
+    expect(app).toContain('subjectLoadGateRef.current.invalidate();\n    setSelectedSubjectId(subjectId);');
+    expect(app).toContain('localStorage.setItem(ACTIVE_CHILD_KEY, nextChild.id);\n      subjectLoadGateRef.current.invalidate();');
+  });
+
   it('keeps the selected subject effect scoped by account, child and year without changing the canonical bank', () => {
     expect(app).toContain(
       '[selectedSubjectId, activeYearBankReady, activeChildId, accountUser?.id, activeStudentYear]'
