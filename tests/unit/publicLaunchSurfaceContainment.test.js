@@ -7,6 +7,8 @@ const appSource = fs.readFileSync(new URL('../../src/App.jsx', import.meta.url),
 const homeDashboardSource = fs.readFileSync(new URL('../../src/dashboard/HomeDashboard.jsx', import.meta.url), 'utf8');
 const analyticsDashboardSource = fs.readFileSync(new URL('../../src/dashboard/AnalyticsDashboard.jsx', import.meta.url), 'utf8');
 const brandStyles = fs.readFileSync(new URL('../../src/styles/brand.css', import.meta.url), 'utf8');
+const debugPanelSource = fs.readFileSync(new URL('../../src/components/questions/QuizDiagnosticsPanel.jsx', import.meta.url), 'utf8');
+const feedbackSource = fs.readFileSync(new URL('../../src/components/feedback/BetaFeedbackButton.jsx', import.meta.url), 'utf8');
 
 function sourceSection(start, end) {
   const startIndex = appSource.indexOf(start);
@@ -16,7 +18,7 @@ function sourceSection(start, end) {
   return appSource.slice(startIndex, endIndex);
 }
 
-const firstRunSource = sourceSection('function FirstRunWizard(', 'function BetaFeedbackButton(');
+const firstRunSource = sourceSection('function FirstRunWizard(', 'function Login(');
 const loginSource = sourceSection('function Login(', 'function LoadingSkeleton(');
 const footerSource = sourceSection('function AppVersiFooter(', 'function StorageRecoveryNotice(');
 const betaChromeSource = sourceSection('function BetaChrome(', 'function TutorAIModalLoading(');
@@ -65,12 +67,18 @@ describe('P1.15A public copy and internal surface containment', () => {
   it('retains internal surfaces only for DEV or the existing explicit debug query', () => {
     expect(isInternalUiSurfaceEnabled({ dev: true, search: '' })).toBe(true);
     expect(isInternalUiSurfaceEnabled({ dev: false, search: '?debug=1' })).toBe(true);
-    expect(betaChromeSource).toContain('isInternalUiSurfaceEnabled() && <BetaFeedbackButton');
+    expect(betaChromeSource).toContain('isInternalUiSurfaceEnabled() && <React.Suspense');
+    expect(betaChromeSource).toContain('<BetaFeedbackButton suppressed={feedbackSuppressed}');
+    expect(appSource).toContain("React.lazy(() => import('./components/feedback/BetaFeedbackButton.jsx'))");
+    expect(feedbackSource).toContain('aria-label="Maklum Balas Beta"');
   });
 
   it('gates the complete QDE learner panel behind the internal visibility policy', () => {
-    expect(quizSource).toContain('isInternalUiSurfaceEnabled() && <details className="qde-debug-panel"');
-    expect(quizSource).toContain('<summary>Panel Bantuan</summary>');
+    expect(quizSource).toContain('isInternalUiSurfaceEnabled() && <React.Suspense');
+    expect(quizSource).toContain('<QuizDiagnosticsPanel qipRow={qipRow}');
+    expect(appSource).toContain("React.lazy(() => import('./components/questions/QuizDiagnosticsPanel.jsx'))");
+    expect(debugPanelSource).toContain('<details className="qde-debug-panel">');
+    expect(debugPanelSource).toContain('<summary>Panel Bantuan</summary>');
   });
 
   it('gates the classroom pilot card and export while preserving the pilot engine', () => {
