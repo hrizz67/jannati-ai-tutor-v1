@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal, flushSync } from 'react-dom';
-import { subjectList, loadSubjectData, loadAllSubjects } from './data/subjects';
+import { subjectList, loadSubjectData } from './data/subjects';
 import { smartCheck } from './utils/smartCheck';
 import { beep } from './utils/speech';
 const AIExplainModal = React.lazy(() => import('./components/ai/AIExplainModal'));
