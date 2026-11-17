@@ -9,7 +9,7 @@ export const CURRICULUM_BANK_CATALOG = Object.freeze([
   Object.freeze({ year: 'Tahun 3', curriculumId: LEGACY_CURRICULUM_ID, status: 'planned' })
 ]);
 
-export function resolveCurriculumBank({ year = LEGACY_STUDENT_YEAR, curriculumId = '' } = {}) {
+export function resolveCurriculumBank({ year, curriculumId = '' } = {}) {
   const normalizedYear = String(year ?? '').trim();
   const normalizedCurriculum = String(curriculumId ?? '').trim();
   const matching = CURRICULUM_BANK_CATALOG.filter(bank =>
