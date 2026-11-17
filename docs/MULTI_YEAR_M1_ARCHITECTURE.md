@@ -20,6 +20,7 @@ No Year 1 or Year 3 content is authored, loaded or made selectable. Curriculum m
 - The legacy `loadSubjectData(id)` / `loadAllSubjects()` APIs and existing `SUPPORTED_STUDENT_YEARS = ['Tahun 2']` are untouched.
 - Existing Year 2 progress keys remain `${subjectId}_${topicId}`.
 - Existing Year 2 Tutor scope keys remain untouched.
+- All new year-scoped APIs require an explicit year; missing years fail closed instead of selecting Year 2.
 - The new guarded APIs intentionally are **not wired into App.jsx** or a selector. No new UI, premium claims, content availability or cloud writes follow from this draft.
 - Future year keys use versioned, encoded segments; they do not reuse Year 2 identifiers.
 
