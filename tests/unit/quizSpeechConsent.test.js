@@ -30,6 +30,15 @@ describe('P1.17 production Quiz speech consent', () => {
     expect(markup).toMatch(/disabled=""[^>]*>Benarkan dan mula/);
   });
 
+  it('loads the consent dialog only on user request without bypassing its accessibility gate', () => {
+    expect(app).toContain("const QuizSpeechConsent = React.lazy(() => import('./components/speech/QuizSpeechConsent.jsx'))");
+    expect(app).not.toContain("import QuizSpeechConsent from './components/speech/QuizSpeechConsent.jsx'");
+    expect(app).toContain('if (quizSpeechConsentOpen) {');
+    expect(app).toContain('role="status">Memuat borang kebenaran rakaman...');
+    expect(app).toContain('onConfirm={confirmQuizSpeechConsent}');
+    expect(app).toContain('onDecline={declineQuizSpeechConsent}');
+  });
+
   it('does not render or persist anything while closed', () => {
     expect(renderToStaticMarkup(React.createElement(QuizSpeechConsent, {
       open: false,
