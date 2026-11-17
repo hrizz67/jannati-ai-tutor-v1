@@ -42,6 +42,24 @@ describe('v3.13.43 production release preparation parity', () => {
     }
   });
 
+  it('audits the exact tagged-production flag bundle in ordinary CI with dummy Supabase credentials', () => {
+    const workflow = readWorkflow('ci.yml');
+    const ciParity = getStep(workflow, 'Verify tagged-production flag parity bundle');
+    expect(ciParity).toContain('run: npm run build');
+    for (const key of [
+      'VITE_STT_ENDPOINT',
+      'VITE_QUIZ_STT_ENDPOINT',
+      'VITE_QUIZ_MOBILE_STT_PILOT_ENABLED',
+      'VITE_QUIZ_MOBILE_STT_AUTO_ENABLED',
+      'VITE_TUTOR_AI_REMOTE_ENABLED'
+    ]) {
+      expect(getStepEnv(ciParity, key), key).toBe(getStepEnv(deploy, key));
+    }
+    expect(workflow).not.toMatch(/secrets\./);
+    expect(workflow).toContain('https://ci-placeholder.supabase.co');
+    expect(workflow).toContain('sb_publishable_ci-placeholder');
+  });
+
   it('checks process isolation, including malicious inherited STT flags', async () => {
     const { createRequire } = await import('node:module');
     const require = createRequire(import.meta.url);
