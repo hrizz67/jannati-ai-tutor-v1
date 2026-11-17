@@ -10,7 +10,7 @@
 
 1. Profile years absent in historical stored data retain existing Year 2 compatibility.
 2. Any **explicit non-Year-2 profile** is refused access to the Year 2 question screens: a clear unavailable-year message is rendered before loading/quiz/dashboard routes.
-3. The normal selected-subject and all-subject background preload paths now use the M1-A `loadYearScopedSubjectData` / `loadYearScopedSubjects` APIs with an explicitly passed active year, and their async failure paths do not display an unrelated fallback subject. A year-change ref discards stale background preload completions.
+3. The normal selected-subject and background preload paths retain the existing Year 2 lazy loaders **only when the profile explicitly permits Year 2**. Both loaders are skipped for planned/unsupported years, and a year-change ref discards stale background preload completions. M1-A's strict year-scoped API remains available for a later migration gate but is intentionally not called from App.jsx yet because the initial-JS budget is already near its limit.
 4. Existing direct `loadSubjectData` calls in recovery and adaptive action handlers are not yet changed. These remain reachable for existing Year 2 paths, and must be covered by the next integration gate before a new year can become ready.
 5. The selector still exposes **only Year 2**. No new curriculum questions, database changes, migration, parent reports, new reward logic or release changes.
 
@@ -20,7 +20,7 @@
 - Existing legacy year labels in onboarding still require a dedicated migration decision; do not silently rewrite historical Year 1/3 profiles or enable unsupported options.
 - Any future feature allowing a different year must first propagate year/curriculum across **resume, adaptive practice, Tutor, quota, rewards, reports, and cloud sync**, not only subject loading.
 - Verify behavior on child switch, stale async subject-preload completion and offline/online restore.
-- Initial JS and Tutor runtime bundle limits unchanged. This branch may increase JS before v3.13.43 bundle optimization; failure means **NO-GO**, never raise budgets to force a PASS.
+- Initial JS and Tutor runtime bundle limits unchanged. Initial attempt exceeded 900 kB (900.31 kB); therefore M1-B deliberately scaled back to the minimal Year 2-only runtime gate. Any further budget failure is **NO-GO**; never raise budgets to force a PASS.
 
 ## Test evidence
 
