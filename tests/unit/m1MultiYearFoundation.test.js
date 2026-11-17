@@ -11,7 +11,7 @@ import { SUPPORTED_STUDENT_YEARS } from '../../src/config/studentYears.js';
 import {
   loadYearScopedSubjectData,
   loadYearScopedSubjects
-} from '../../src/data/subjects/yearScopedLoader.js';
+} from '../../src/data/yearScopedSubjectLoader.js';
 import { loadSubjectData } from '../../src/data/subjects/index.js';
 import { createTutorConversationScope } from '../../src/services/studentIdentity.js';
 import {
