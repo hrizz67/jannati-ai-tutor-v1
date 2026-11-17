@@ -55,6 +55,16 @@ jobs:
         id: build-assets
         run: npm run build:structure-check
 
+      - name: Verify tagged-production flag parity bundle
+        id: tagged-parity
+        env:
+          VITE_TUTOR_AI_REMOTE_ENABLED: 'false'
+          VITE_STT_ENDPOINT: https://jannati-ai-tutor-stt.jannati-ai-tutor-stt-hrizz67.workers.dev/v1/transcribe
+          VITE_QUIZ_STT_ENDPOINT: https://jannati-ai-tutor-quiz-stt.jannati-ai-tutor-stt-hrizz67.workers.dev/v1/quiz/transcribe
+          VITE_QUIZ_MOBILE_STT_PILOT_ENABLED: 'true'
+          VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'false'
+        run: npm run build
+
       - name: Build isolated QA preview artifact
         id: qa-preview
         shell: bash
@@ -99,6 +109,7 @@ jobs:
             echo "| Subject coverage reports | ${{ steps.subject-coverage.outcome }} |"
             echo "| Production build | ${{ steps.build.outcome }} |"
             echo "| Build assets | ${{ steps.build-assets.outcome }} |"
+            echo "| Tagged-production flag parity | ${{ steps.tagged-parity.outcome }} |"
             echo "| Isolated QA preview | ${{ steps.qa-preview.outcome }} |"
             echo "| Private Quiz STT QA artifact (dummy config only) | ${{ steps.quiz-stt-qa.outcome }} |"
           } >> "$GITHUB_STEP_SUMMARY"
