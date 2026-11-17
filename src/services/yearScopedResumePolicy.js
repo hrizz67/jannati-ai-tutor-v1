@@ -35,12 +35,19 @@ function matchesRecordBank(record, bank) {
 function matchingScopeIdentity(record, selection, bank) {
   const child = String(selection?.childId ?? '').trim();
   const account = String(selection?.accountId ?? '').trim();
-  const recordChild = String(record?.childId || record?.studentId || record?.state?.childId || '').trim();
-  const recordAccount = String(record?.accountId || record?.state?.accountId || '').trim();
-  if (child && recordChild && child !== recordChild) return false;
-  if (account && recordAccount && account !== recordAccount) return false;
-  // Future records may not rely on the historical unscoped guest/default ID.
-  if (bank.year !== LEGACY_STUDENT_YEAR && (!recordChild || recordChild === 'default' || !recordAccount)) return false;
+  const children = [...new Set([
+    ...explicitHints(record, 'childId'),
+    ...explicitHints(record, 'studentId')
+  ].filter(id => id !== 'default'))];
+  const accounts = explicitHints(record, 'accountId');
+  if (children.length > 1 || accounts.length > 1) return false;
+  if (child && children.length && child !== children[0]) return false;
+  if (account && accounts.length && account !== accounts[0]) return false;
+  // Future records need both explicit selection and matching persisted IDs.
+  if (bank.year !== LEGACY_STUDENT_YEAR && (
+    !child || !account || children.length !== 1 || accounts.length !== 1
+    || children[0] !== child || accounts[0] !== account
+  )) return false;
   return true;
 }
 
@@ -67,7 +74,8 @@ export function getYearScopedResumeScopeKey(record = {}, selection = {}) {
   if (!matchingScopeIdentity(record, selection, bank)) {
     throw new Error('Future resume record requires matching explicit child and account identity.');
   }
-  return ['m1', 'resume', bank.curriculumId, bank.year, legacyKey]
+  return ['m1', 'resume', bank.curriculumId, bank.year,
+    selection.accountId, selection.childId, legacyKey]
     .map(encodeURIComponent).join('::');
 }
 
