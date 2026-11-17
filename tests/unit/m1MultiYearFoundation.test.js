@@ -57,6 +57,10 @@ describe('M1 multi-year foundation: fail-closed, no rollout', () => {
   });
 
   it('denies planned-year content and unknown subject instead of serving BM', async () => {
+    await expect(loadYearScopedSubjectData({ subjectId: 'bm' }))
+      .rejects.toThrow(/Missing explicit student year/);
+    await expect(loadYearScopedSubjects())
+      .rejects.toThrow(/Missing explicit student year/);
     await expect(loadYearScopedSubjectData({
       year: 'Tahun 1', curriculumId: 'kp2027', subjectId: 'bm'
     })).rejects.toThrow(/Question bank not ready/);
@@ -77,6 +81,8 @@ describe('M1 multi-year foundation: fail-closed, no rollout', () => {
     const yearOne = createYearScopedProgressKey({ ...common, year: 'Tahun 1', curriculumId: 'kp2027' });
     const yearThree = createYearScopedProgressKey({ ...common, year: 'Tahun 3', curriculumId: LEGACY_CURRICULUM_ID });
     expect(legacy).toBe('bm_kata_nama');
+    expect(() => createYearScopedProgressKey({ ...common }))
+      .toThrow(/Missing year/);
     expect(new Set([legacy, yearOne, yearThree]).size).toBe(3);
     expect(() => createYearScopedProgressKey({ year: 'Tahun 1', subjectId: 'bm', topicId: '' }))
       .toThrow(/Missing topicId/);
@@ -88,7 +94,9 @@ describe('M1 multi-year foundation: fail-closed, no rollout', () => {
       subjectId: 'bm', topicId: 'kata_nama', sessionId: 'sess', questionId: 'BM-001'
     };
     const existing = createTutorConversationScope(identity, context);
-    const legacy = createYearScopedTutorConversationScope(identity, context);
+    const legacy = createYearScopedTutorConversationScope(identity, {
+      ...context, year: 'Tahun 2'
+    });
     const one = createYearScopedTutorConversationScope(identity, {
       ...context, year: 'Tahun 1', curriculumId: 'kp2027'
     });
@@ -96,6 +104,8 @@ describe('M1 multi-year foundation: fail-closed, no rollout', () => {
       ...context, year: 'Tahun 3', curriculumId: LEGACY_CURRICULUM_ID
     });
     expect(legacy).toBe(existing);
+    expect(() => createYearScopedTutorConversationScope(identity, context))
+      .toThrow(/Missing year/);
     expect(new Set([legacy, one, three]).size).toBe(3);
     expect(createYearScopedTutorConversationScope({ accountId: 'acct', childId: 'child-B' }, {
       ...context, year: 'Tahun 3'
