@@ -56,7 +56,11 @@ function descriptorString(value, key) {
  * encrypted backup/restore implementation exists.
  */
 export function planMultiYearMigrationRecovery(snapshot = {}, selection = {}) {
-  const validSnapshot = isPlainSnapshot(snapshot);
+  // Do not invoke arbitrary getters when handing a caller-supplied snapshot
+  // to the existing dry-run parser. Data-only snapshots are mandatory.
+  const validSnapshot = isPlainSnapshot(snapshot)
+    && Object.values(Object.getOwnPropertyDescriptors(snapshot))
+      .every(descriptor => hasOwn(descriptor, 'value'));
   const snapshotStatus = validSnapshot
     ? inspectMultiYearResumeMigration(snapshot, selection)
     : inspectMultiYearResumeMigration(null, selection);
