@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal, flushSync } from 'react-dom';
-import { subjectList, loadSubjectData } from './data/subjects';
+import { subjectList, loadSubjectData, loadAllSubjects } from './data/subjects';
 import { smartCheck } from './utils/smartCheck';
 import { beep } from './utils/speech';
 const AIExplainModal = React.lazy(() => import('./components/ai/AIExplainModal'));
@@ -3278,8 +3278,6 @@ export default function App() {
   useEffect(() => {
     let alive = true;
     setLoadingSubject(true);
-    // Fail closed on an explicit Year 1/3 profile. Never fetch the Year 2
-    // bank as an implicit fallback for a different year.
     if (!activeYearBankReady) {
       allSubjectsLoadRef.current = null;
       setSelectedSubject(null);
@@ -3287,33 +3285,20 @@ export default function App() {
       setLoadingSubject(false);
       return () => { alive = false; };
     }
-    import('./data/yearScopedSubjectLoader.js')
-      .then(({ loadYearScopedSubjectData }) => loadYearScopedSubjectData({
-        year: activeStudentYear,
-        subjectId: selectedSubjectId
-      }))
-      .then(subject => {
-        if (!alive) return;
-        setSelectedSubject(subject);
-        setAllSubjects(current => mergeLoadedSubjects(current, [subject]));
-        setLoadingSubject(false);
-      })
-      .catch(() => {
-        if (!alive) return;
-        setSelectedSubject(null);
-        setLoadingSubject(false);
-        setRecoveryMessages(prev => [...prev, 'Bank soalan tidak dapat dimuatkan. Sila cuba semula.']);
-      });
+    // Year 2 remains the sole ready bank in this limited compatibility gate.
+    loadSubjectData(selectedSubjectId).then(subject => {
+      if (!alive) return;
+      setSelectedSubject(subject);
+      setAllSubjects(current => mergeLoadedSubjects(current, [subject]));
+      setLoadingSubject(false);
+    });
     return () => { alive = false; };
-  }, [selectedSubjectId, activeStudentYear, activeYearBankReady]);
+  }, [selectedSubjectId, activeYearBankReady]);
 
   function ensureAllSubjectsLoaded() {
     if (!activeYearBankReady) return Promise.resolve([]);
     if (!allSubjectsLoadRef.current) {
-      allSubjectsLoadRef.current = import('./data/yearScopedSubjectLoader.js')
-        .then(({ loadYearScopedSubjects }) => loadYearScopedSubjects({
-          year: activeStudentYear
-        }))
+      allSubjectsLoadRef.current = loadAllSubjects()
         .then(subjects => {
           if (activeStudentYearRef.current !== activeStudentYear) return [];
           setAllSubjects(subjects);
