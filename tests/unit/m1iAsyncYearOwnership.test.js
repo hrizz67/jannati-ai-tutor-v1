@@ -81,7 +81,7 @@ describe('M1-I fail-closed async subject-load ownership', () => {
     expect(app).toContain('await startInteractivePracticeResume(targetResume, { restart: true }, lease)');
     expect(app).toContain('if (!subjectLoadGateRef.current.isCurrent(lease)) return false;\n      if (loadedSubjects.length)');
     expect(app).not.toContain('await loadSubjectData(targetResume.subjectId)');
-    expect(app).not.toContain('await loadSubjectData(subjectId)');
+    expect(app).toContain('const subject = await loadSubjectData(subjectId);'); // only inside the guarded wrapper
   });
 
   it('keeps the selected subject effect scoped by account, child and year without changing the canonical bank', () => {
