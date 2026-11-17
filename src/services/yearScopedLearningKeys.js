@@ -19,7 +19,8 @@ function isLegacyYearTwo(bank) {
 // Preserve original Year 2 progress IDs. Future years use an unambiguous
 // curriculum+year prefix so scores never leak across grades/curriculum editions.
 export function createYearScopedProgressKey({ year, curriculumId, subjectId, topicId } = {}) {
-  const bank = requireCurriculumBank({ year, curriculumId });
+  const explicitYear = requiredId(year, 'year');
+  const bank = requireCurriculumBank({ year: explicitYear, curriculumId });
   const subject = requiredId(subjectId, 'subjectId');
   const topic = requiredId(topicId, 'topicId');
   if (isLegacyYearTwo(bank)) return `${subject}_${topic}`;
@@ -30,7 +31,8 @@ export function createYearScopedProgressKey({ year, curriculumId, subjectId, top
 // Keep historical Year 2 Tutor session keys unchanged. A future year gets an
 // explicit year/curriculum suffix in addition to child/subject/question scope.
 export function createYearScopedTutorConversationScope(identity = {}, context = {}) {
-  const bank = requireCurriculumBank({ year: context.year, curriculumId: context.curriculumId });
+  const explicitYear = requiredId(context.year, 'year');
+  const bank = requireCurriculumBank({ year: explicitYear, curriculumId: context.curriculumId });
   const existingScope = createTutorConversationScope(identity, context);
   if (isLegacyYearTwo(bank)) return existingScope;
   return `${existingScope}::${['m1', bank.curriculumId, bank.year].map(encodeURIComponent).join('::')}`;
