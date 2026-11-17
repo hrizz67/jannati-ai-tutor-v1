@@ -210,6 +210,8 @@ export function auditMultiYearCloudBoundary(request = {}) {
 
   const localPending = readJsonObject(localPayload[RESUME_PENDING_TOMBSTONES_KEY]);
   const cloudPending = readJsonObject(cloudPayload[RESUME_PENDING_TOMBSTONES_KEY]);
+  const localCleared = readJsonObject(localPayload[RESUME_TOMBSTONES_KEY]);
+  const cloudCleared = readJsonObject(cloudPayload[RESUME_TOMBSTONES_KEY]);
   for (const [label, payload, parsed] of [
     ['local', localPayload, localPending],
     ['cloud', cloudPayload, cloudPending]
@@ -230,6 +232,15 @@ export function auditMultiYearCloudBoundary(request = {}) {
     if (JSON.stringify(localKeys) !== JSON.stringify(cloudKeys)
       || localKeys.some(key => JSON.stringify(localPending[key]) !== JSON.stringify(cloudPending[key]))) {
       findings.add('pending_tombstone_drift');
+    }
+  }
+
+  if (localCleared && cloudCleared && countObject(localCleared) && countObject(cloudCleared)) {
+    const left = Object.keys(localCleared).sort();
+    const right = Object.keys(cloudCleared).sort();
+    if (JSON.stringify(left) !== JSON.stringify(right)
+      || left.some(key => JSON.stringify(localCleared[key]) !== JSON.stringify(cloudCleared[key]))) {
+      findings.add('cleared_tombstone_drift');
     }
   }
 
