@@ -221,15 +221,15 @@ describe('M1-G read-only cloud / year integration audit', () => {
     const malicious = Object.defineProperty({}, 'cloudPayload', {
       enumerable: true, get() { throw new Error('getter must not execute'); }
     });
-    // Parent-level accessor is disallowed by contract: only caller-created data
-    // objects should reach the diagnostic. The leaf-map accessor is rejected.
+    const topReport = auditMultiYearCloudBoundary(malicious);
+    expect(topReport.findings).toContain('invalid_input_object');
+    // Leaf-map accessor inputs must also be rejected before property access.
     const unsafe = Object.defineProperty({}, CLOUD_CHILD_STATE_KEY, {
       enumerable: true, get() { throw new Error('cloud getter must not execute'); }
     });
     const report = auditMultiYearCloudBoundary({ ...fixture(), cloudPayload: unsafe });
     expect(report.findings).toContain('invalid_input_object');
     expect(report.canApply).toBe(false);
-    expect(malicious).toBeTruthy();
 
     const module = readFileSync('src/services/multiYearCloudBoundaryAudit.js', 'utf8');
     const app = readFileSync('src/App.jsx', 'utf8');
