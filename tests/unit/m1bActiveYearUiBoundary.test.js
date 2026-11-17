@@ -8,9 +8,10 @@ describe('M1-B active-year UI subject boundary', () => {
   it('keeps legacy Year 2 dashboard selection while gating explicit different grades', () => {
     expect(source).toContain("const activeStudentYear = String(profile?.year || 'Tahun 2').trim()");
     expect(source).toContain("const activeYearBankReady = activeStudentYear === 'Tahun 2'");
-    expect(source).toContain("if (!activeYearBankReady) return <BetaChrome");
+    expect(source).toContain("if (!activeYearBankReady && !showAccountLogin && !adminRouteActive && !premiumSalesRouteActive) return <BetaChrome");
     expect(source).toContain('Bank soalan bagi tahun profil ini belum diluluskan.');
-    expect(source.indexOf('if (!activeYearBankReady) return <BetaChrome')).toBeLessThan(source.indexOf('if (loadingSubject) return <BetaChrome'));
+    expect(source.indexOf('if (!activeYearBankReady && !showAccountLogin')).toBeLessThan(source.indexOf('if (showOnboarding && !showAccountLogin)'));
+    expect(source.indexOf('if (!activeYearBankReady && !showAccountLogin')).toBeLessThan(source.indexOf('if (loadingSubject) return <BetaChrome'));
     expect(source.indexOf('if (!activeYearBankReady) return <BetaChrome')).toBeLessThan(source.indexOf("if (screen === 'quiz') {\n    const question = currentQuestion()"));
   });
 
