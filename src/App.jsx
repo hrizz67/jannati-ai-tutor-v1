@@ -1422,6 +1422,8 @@ export default function App() {
   // unsupported/planned year must never display Year 2 questions.
   const activeStudentYear = String(profile?.year || 'Tahun 2').trim();
   const activeYearBankReady = activeStudentYear === 'Tahun 2';
+  const activeStudentYearRef = useRef(activeStudentYear);
+  activeStudentYearRef.current = activeStudentYear;
   const [adaptiveProfile, setAdaptiveProfile] = useState(() => loadAdaptiveStudentProfile(getStoredLearningIdentity(loadProfile())));
   const [gamificationProfile, setGamificationProfile] = useState(() => loadGamificationState(getStoredLearningIdentity(loadProfile())));
   const [resume, setResume] = useState(() => loadResume(getStoredLearningIdentity(loadProfile())));
@@ -3313,6 +3315,7 @@ export default function App() {
           year: activeStudentYear
         }))
         .then(subjects => {
+          if (activeStudentYearRef.current !== activeStudentYear) return [];
           setAllSubjects(subjects);
           return subjects;
         })
