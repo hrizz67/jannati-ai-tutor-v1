@@ -9,7 +9,6 @@ import {
 } from '../utils/resumeStorage.js';
 import { resolveCurriculumBank } from '../config/curriculumBankCatalog.js';
 
-const CHILD_PROFILES_KEY = 'jannati_child_profiles';
 const ROOT_PROFILE_KEY = 'jannati_v151_profile';
 const MAX_RAW_BYTES = 1024 * 1024;
 const MAX_RECORDS = 256;
@@ -30,16 +29,6 @@ function readJsonObject(value) {
   try {
     const parsed = JSON.parse(value);
     return plainData(parsed) ? parsed : null;
-  } catch {
-    return null;
-  }
-}
-
-function readJsonArray(value) {
-  if (typeof value !== 'string' || value.length > MAX_RAW_BYTES) return null;
-  try {
-    const parsed = JSON.parse(value);
-    return Array.isArray(parsed) ? parsed : null;
   } catch {
     return null;
   }
