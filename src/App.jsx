@@ -20,6 +20,7 @@ import JannaAvatar from './components/JannaAvatar';
 import JatiAvatar from './components/JatiAvatar';
 import VoiceButton from './components/VoiceButton.jsx';
 import QuizFeedbackAccessibility from './components/questions/QuizFeedbackAccessibility.jsx';
+import { createYear2AsyncOwnerGate } from './services/yearOwnedAsyncSubjectGate.js';
 const QuizSpeechConsent = React.lazy(() => import('./components/speech/QuizSpeechConsent.jsx'));
 const QuizDiagnosticsPanel = React.lazy(() => import('./components/questions/QuizDiagnosticsPanel.jsx'));
 const BetaFeedbackButton = React.lazy(() => import('./components/feedback/BetaFeedbackButton.jsx'));
@@ -1494,6 +1495,15 @@ export default function App() {
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [allSubjects, setAllSubjects] = useState([]);
   const allSubjectsLoadRef = useRef(null);
+  const subjectLoadGateRef = useRef(null);
+  if (!subjectLoadGateRef.current) subjectLoadGateRef.current = createYear2AsyncOwnerGate();
+  // Update on every render: async completions compare against the *current*
+  // account, child and grade, not the closure from the old learning screen.
+  if (subjectLoadGateRef.current.setOwner({
+    accountId: learningIdentity.accountId,
+    childId: activeChildId,
+    year: activeStudentYear
+  })) allSubjectsLoadRef.current = null;
   const [loadingSubject, setLoadingSubject] = useState(true);
   const [activeSubject, setActiveSubject] = useState(null);
   const [activeTopic, setActiveTopic] = useState(null);
@@ -2169,6 +2179,7 @@ export default function App() {
     const target = availableProfiles.find(item => item.id === childId);
     const currentChildId = activeChildId || readActiveChildId();
     if (!target || target.id === currentChildId) return;
+    subjectLoadGateRef.current.invalidate();
     if (currentChildId && !captureChildSnapshot(currentChildId, { force: true })) {
       setRecoveryMessages(prev => [...prev, 'Pertukaran profil dihentikan kerana data profil semasa belum dapat disahkan dan disimpan dengan selamat.']);
       return;
@@ -3278,40 +3289,57 @@ export default function App() {
     setGamificationProfile(updated);
   }
 
+  // Reject a subject response as soon as the account, child, year or request
+  // epoch changes. All historical Year 2 subject data loads remain unchanged.
+  async function loadYear2SubjectForLease(subjectId, lease = subjectLoadGateRef.current.capture()) {
+    if (!subjectLoadGateRef.current.isCurrent(lease)) return null;
+    const subject = await loadSubjectData(subjectId);
+    return subjectLoadGateRef.current.isCurrent(lease) ? subject : null;
+  }
+
   useEffect(() => {
     let alive = true;
+    const lease = subjectLoadGateRef.current.capture();
     setLoadingSubject(true);
-    if (!activeYearBankReady) {
+    setSelectedSubject(null);
+    setAllSubjects([]);
+    if (!activeYearBankReady || !subjectLoadGateRef.current.isCurrent(lease)) {
       allSubjectsLoadRef.current = null;
-      setSelectedSubject(null);
-      setAllSubjects([]);
       setLoadingSubject(false);
       return () => { alive = false; };
     }
-    // Year 2 remains the sole ready bank in this limited compatibility gate.
-    loadSubjectData(selectedSubjectId).then(subject => {
-      if (!alive) return;
+    // A previous child can finish loading after a profile switch. Never mount
+    // that child's questions into a new child's dashboard.
+    loadYear2SubjectForLease(selectedSubjectId, lease).then(subject => {
+      if (!alive || !subject || !subjectLoadGateRef.current.isCurrent(lease)) return;
       setSelectedSubject(subject);
       setAllSubjects(current => mergeLoadedSubjects(current, [subject]));
       setLoadingSubject(false);
+    }).catch(() => {
+      if (!alive || !subjectLoadGateRef.current.isCurrent(lease)) return;
+      setLoadingSubject(false);
+      setRecoveryMessages(prev => [...prev, 'Subjek belum dapat dimuat. Cuba pilih semula subjek.']);
     });
     return () => { alive = false; };
-  }, [selectedSubjectId, activeYearBankReady]);
+  }, [selectedSubjectId, activeYearBankReady, activeChildId, accountUser?.id, activeStudentYear]);
 
   function ensureAllSubjectsLoaded() {
-    if (!activeYearBankReady) return Promise.resolve([]);
+    const lease = subjectLoadGateRef.current.capture();
+    if (!subjectLoadGateRef.current.isCurrent(lease)) return Promise.resolve([]);
     if (!allSubjectsLoadRef.current) {
-      allSubjectsLoadRef.current = loadAllSubjects()
+      const request = loadAllSubjects()
         .then(subjects => {
-          if (activeStudentYearRef.current !== activeStudentYear) return [];
+          if (!subjectLoadGateRef.current.isCurrent(lease)) return [];
           setAllSubjects(subjects);
           return subjects;
         })
         .catch(() => {
-          allSubjectsLoadRef.current = null;
+          if (!subjectLoadGateRef.current.isCurrent(lease)) return [];
+          if (allSubjectsLoadRef.current === request) allSubjectsLoadRef.current = null;
           setRecoveryMessages(prev => [...prev, 'Data semua subjek belum dapat dipramuat. Subjek semasa masih boleh digunakan.']);
           return [];
         });
+      allSubjectsLoadRef.current = request;
     }
     return allSubjectsLoadRef.current;
   }
