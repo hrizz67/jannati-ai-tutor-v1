@@ -25,28 +25,48 @@ describe('v3.13.43 production release preparation parity', () => {
   const prepare = getStep(readWorkflow('release-preparation.yml'), 'Run canonical production release preparation');
   const deploy = getStep(readWorkflow('deploy.yml'), 'Build production application');
 
-  const publicBuildFlags = [
-    'VITE_TUTOR_AI_REMOTE_ENABLED',
-    'VITE_STT_ENDPOINT',
-    'VITE_QUIZ_STT_ENDPOINT',
-    'VITE_QUIZ_MOBILE_STT_PILOT_ENABLED',
-    'VITE_QUIZ_MOBILE_STT_AUTO_ENABLED'
+  const buildOnlyFlags = [
+    ['RELEASE_BUILD_STT_ENDPOINT', 'VITE_STT_ENDPOINT'],
+    ['RELEASE_BUILD_QUIZ_STT_ENDPOINT', 'VITE_QUIZ_STT_ENDPOINT'],
+    ['RELEASE_BUILD_QUIZ_MOBILE_STT_PILOT_ENABLED', 'VITE_QUIZ_MOBILE_STT_PILOT_ENABLED']
   ];
 
-  it('uses the same exact public STT and remote-AI build flags before tagging', () => {
-    for (const key of publicBuildFlags) {
-      expect(getStepEnv(prepare, key), key).toBe(getStepEnv(deploy, key));
+  it('passes exactly deployment STT flags to release build, never to validation', () => {
+    for (const [releaseName, deployedName] of buildOnlyFlags) {
+      expect(getStepEnv(prepare, releaseName), releaseName).toBe(getStepEnv(deploy, deployedName));
+      expect(prepare).not.toMatch(new RegExp('^\\s*' + deployedName + '\\s*:', 'm'));
     }
-    expect(prepare).not.toMatch(/env\s+-u\s+VITE_(?:STT_ENDPOINT|QUIZ_STT_ENDPOINT|QUIZ_MOBILE_STT_PILOT_ENABLED)/);
+    for (const key of ['VITE_TUTOR_AI_REMOTE_ENABLED', 'VITE_QUIZ_MOBILE_STT_AUTO_ENABLED']) {
+      expect(getStepEnv(prepare, key), key).toBe(getStepEnv(deploy, key));
+      expect(getStepEnv(prepare, key)).toBe('false');
+    }
   });
 
-  it('preserves the owner-only remote and automatic quiz STT kill switches', () => {
-    for (const step of [prepare, deploy]) {
-      expect(getStepEnv(step, 'VITE_TUTOR_AI_REMOTE_ENABLED')).toBe('false');
-      expect(getStepEnv(step, 'VITE_QUIZ_MOBILE_STT_AUTO_ENABLED')).toBe('false');
-      expect(getStepEnv(step, 'VITE_QUIZ_MOBILE_STT_PILOT_ENABLED')).toBe('true');
-      expect(getStepEnv(step, 'VITE_STT_ENDPOINT')).toMatch(/^https:\/\//);
-      expect(getStepEnv(step, 'VITE_QUIZ_STT_ENDPOINT')).toMatch(/\/v1\/quiz\/transcribe$/);
+  it('checks process isolation, including malicious inherited STT flags', async () => {
+    const { createRequire } = await import('node:module');
+    const require = createRequire(import.meta.url);
+    const { getValidationEnvironment, getReleaseBuildEnvironment } =
+      require('../../scripts/release/release.js');
+    const inherited = {
+      PATH: '/test',
+      VITE_STT_ENDPOINT: 'https://inherited.invalid',
+      VITE_QUIZ_STT_ENDPOINT: 'https://inherited.invalid/quiz',
+      VITE_QUIZ_MOBILE_STT_PILOT_ENABLED: 'true',
+      RELEASE_BUILD_STT_ENDPOINT: 'https://example.test/v1/transcribe',
+      RELEASE_BUILD_QUIZ_STT_ENDPOINT: 'https://example.test/v1/quiz/transcribe',
+      RELEASE_BUILD_QUIZ_MOBILE_STT_PILOT_ENABLED: 'true'
+    };
+    const validation = getValidationEnvironment(inherited);
+    const build = getReleaseBuildEnvironment(inherited);
+    for (const [, name] of buildOnlyFlags) {
+      expect(validation).not.toHaveProperty(name);
     }
+    expect(build.VITE_STT_ENDPOINT).toBe(inherited.RELEASE_BUILD_STT_ENDPOINT);
+    expect(build.VITE_QUIZ_STT_ENDPOINT).toBe(inherited.RELEASE_BUILD_QUIZ_STT_ENDPOINT);
+    expect(build.VITE_QUIZ_MOBILE_STT_PILOT_ENABLED).toBe('true');
+    expect(getReleaseBuildEnvironment({ VITE_STT_ENDPOINT: 'https://inherited.invalid' }))
+      .not.toHaveProperty('VITE_STT_ENDPOINT');
+    expect(inherited.VITE_STT_ENDPOINT).toBe('https://inherited.invalid');
   });
+});
 });
