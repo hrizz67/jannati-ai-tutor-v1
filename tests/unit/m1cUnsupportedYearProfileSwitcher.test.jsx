@@ -41,7 +41,7 @@ describe('M1-C blocked-grade profile switch recovery', () => {
       onSelectChild
     });
     expect(host.querySelector('h1')?.textContent).toContain('Tahun belum tersedia');
-    expect(host.textContent).toContain('Bank soalan Tahun 3 belum diluluskan');
+    expect(host.textContent).toContain('Bank soalan tahun ini belum diluluskan');
     expect(host.textContent).toContain('Murid 2');
     expect(host.textContent).not.toContain('Murid 1');
     const eligible = [...host.querySelectorAll('button')].find(button => button.textContent.includes('Murid 2'));
