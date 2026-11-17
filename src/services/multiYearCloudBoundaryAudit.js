@@ -64,12 +64,7 @@ function countObject(value) {
  * storage, send network traffic, apply cloud writes, or authorize migration.
  * It returns only fixed codes and aggregate counts: never raw child data.
  */
-export function auditMultiYearCloudBoundary({
-  localPayload = {},
-  cloudPayload = {},
-  selection = {},
-  syncState = {}
-} = {}) {
+export function auditMultiYearCloudBoundary(request = {}) {
   const findings = new Set();
   const counts = {
     localChildSnapshots: 0,
@@ -94,6 +89,14 @@ export function auditMultiYearCloudBoundary({
     findings: [...findings].sort()
   });
 
+  if (!plainData(request)) {
+    findings.add('invalid_input_object');
+    return finish();
+  }
+  const localPayload = request.localPayload ?? {};
+  const cloudPayload = request.cloudPayload ?? {};
+  const selection = request.selection ?? {};
+  const syncState = request.syncState ?? {};
   if (![localPayload, cloudPayload, selection, syncState].every(plainData)) {
     findings.add('invalid_input_object');
     return finish();
