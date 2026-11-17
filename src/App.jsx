@@ -1418,6 +1418,12 @@ function buildPredictionGreeting(profile, predictionProfile, readiness, studyPla
 
 export default function App() {
   const [profile, setProfile] = useState(loadStoredStudentCore);
+  // M1-B: legacy profiles without a year remain Year 2, but an explicit
+  // unsupported/planned year must never display Year 2 questions.
+  const activeStudentYear = String(profile?.year || 'Tahun 2').trim();
+  const activeYearBankReady = activeStudentYear === 'Tahun 2';
+  const activeStudentYearRef = useRef(activeStudentYear);
+  activeStudentYearRef.current = activeStudentYear;
   const [adaptiveProfile, setAdaptiveProfile] = useState(() => loadAdaptiveStudentProfile(getStoredLearningIdentity(loadProfile())));
   const [gamificationProfile, setGamificationProfile] = useState(() => loadGamificationState(getStoredLearningIdentity(loadProfile())));
   const [resume, setResume] = useState(() => loadResume(getStoredLearningIdentity(loadProfile())));
@@ -3272,6 +3278,14 @@ export default function App() {
   useEffect(() => {
     let alive = true;
     setLoadingSubject(true);
+    if (!activeYearBankReady) {
+      allSubjectsLoadRef.current = null;
+      setSelectedSubject(null);
+      setAllSubjects([]);
+      setLoadingSubject(false);
+      return () => { alive = false; };
+    }
+    // Year 2 remains the sole ready bank in this limited compatibility gate.
     loadSubjectData(selectedSubjectId).then(subject => {
       if (!alive) return;
       setSelectedSubject(subject);
@@ -3279,12 +3293,14 @@ export default function App() {
       setLoadingSubject(false);
     });
     return () => { alive = false; };
-  }, [selectedSubjectId]);
+  }, [selectedSubjectId, activeYearBankReady]);
 
   function ensureAllSubjectsLoaded() {
+    if (!activeYearBankReady) return Promise.resolve([]);
     if (!allSubjectsLoadRef.current) {
       allSubjectsLoadRef.current = loadAllSubjects()
         .then(subjects => {
+          if (activeStudentYearRef.current !== activeStudentYear) return [];
           setAllSubjects(subjects);
           return subjects;
         })
@@ -5420,6 +5436,8 @@ export default function App() {
     };
     return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={false} currentScreen="password-recovery"><React.Suspense fallback={<main className="app login-page"><section className="card"><p role="status">Menyediakan pemulihan akaun...</p></section></main>}><main className="app login-page"><section className="card"><AuthRecoveryPanel mode={recoveryMode} auth={supabase?.auth || null} redirectTo={getEmailRedirectUrl()} onSupabaseReady={setSupabase} onBack={leaveRecovery} onComplete={leaveRecovery} /></section></main></React.Suspense></BetaChrome>;
   }
+
+  if (!activeYearBankReady && !showAccountLogin && !adminRouteActive && !premiumSalesRouteActive) return <BetaChrome recoveryMessages={recoveryMessages}><main className="app"><EmptyState title="Tahun belum tersedia." message="Bank tahun ini belum sedia. Soalan Tahun 2 tidak ditunjukkan." actionLabel="Tukar profil" onAction={() => { setShowAccountLogin(true); setScreen('login'); }} /></main></BetaChrome>;
 
   if (showOnboarding && !showAccountLogin) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><FirstRunWizard profile={profile} onComplete={completeOnboarding} onAccountLogin={() => setShowAccountLogin(true)} /></BetaChrome>;
 
