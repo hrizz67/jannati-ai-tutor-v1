@@ -28,8 +28,9 @@ describe('M1-H integrated owner-only runtime, policy and bundle gate', () => {
     expect(boundary).toBeGreaterThan(0);
     expect(boundary).toBeLessThan(app.indexOf('if (showOnboarding && !showAccountLogin)'));
     expect(boundary).toBeLessThan(app.indexOf("if (screen === 'quiz') {\n    const question = currentQuestion()"));
-    expect(app).toMatch(/if \(!activeYearBankReady\) \{\s+allSubjectsLoadRef\.current = null;/);
-    expect(app).toContain('activeStudentYearRef.current !== activeStudentYear');
+    expect(app).toContain('if (!activeYearBankReady || !subjectLoadGateRef.current.isCurrent(lease))');
+    expect(app).toContain('subjectLoadGateRef.current.setOwner({');
+    expect(app).toContain('subjectLoadGateRef.current.invalidate();');
     expect(isCurriculumBankReady(year2)).toBe(true);
     expect(isCurriculumBankReady(year3)).toBe(false);
     expect(isCurriculumBankReady({ year: 'Tahun 1', curriculumId: 'kp2027' })).toBe(false);
