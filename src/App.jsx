@@ -22,6 +22,7 @@ import VoiceButton from './components/VoiceButton.jsx';
 import QuizFeedbackAccessibility from './components/questions/QuizFeedbackAccessibility.jsx';
 const QuizSpeechConsent = React.lazy(() => import('./components/speech/QuizSpeechConsent.jsx'));
 const QuizDiagnosticsPanel = React.lazy(() => import('./components/questions/QuizDiagnosticsPanel.jsx'));
+const BetaFeedbackButton = React.lazy(() => import('./components/feedback/BetaFeedbackButton.jsx'));
 import CommunicationContentErrorFallback from './components/communication/CommunicationContentErrorFallback.jsx';
 import { renderSubjectQuestionText } from './components/SubjectLanguageText.jsx';
 const TutorAIModal = React.lazy(() => import('./components/ai/TutorAIModal.jsx'));
@@ -5481,7 +5482,7 @@ function BetaChrome({ children, recoveryMessages = [], modalOpen = false, curren
       <ConnectivityNotice />
       <div className="app-page-shell" data-screen={currentScreen}>{children}</div>
       {recoveryMessages.length > 0 && <StorageRecoveryNotice messages={recoveryMessages} />}
-      {isInternalUiSurfaceEnabled() && <BetaFeedbackButton suppressed={feedbackSuppressed} />}
+      {isInternalUiSurfaceEnabled() && <React.Suspense fallback={null}><BetaFeedbackButton suppressed={feedbackSuppressed} onSaveFeedback={saveFeedbackItem} version={APP_VERSION} buildDate={APP_BUILD_DATE} betaStatus={BETA_STATUS} IconGlyph={IconGlyph} BrandLogo={BrandLogo} /></React.Suspense>}
       <AppVersiFooter />
     </div>
   </>;
@@ -5586,71 +5587,6 @@ function FirstRunWizard({ profile, onComplete, onAccountLogin }) {
       </div>
     </section>
   </main>;
-}
-
-function BetaFeedbackButton({ suppressed = false }) {
-  const categories = ['Pepijat', 'Cadangan', 'Kandungan', 'AI', 'Pengalaman'];
-  const [open, setOpen] = useState(false);
-  const [category, setKategori] = useState('Pepijat');
-  const [rating, setRating] = useState(5);
-  const [comment, setComment] = useState('');
-  const [screenshotDescription, setScreenshotDescription] = useState('');
-  const [saved, setSaved] = useState(false);
-  const closeRef = useRef(null);
-
-  useEffect(() => {
-    if (!open) return undefined;
-    closeRef.current?.focus();
-    function onKeyDown(event) {
-      if (event.key === 'Escape') setOpen(false);
-    }
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [open]);
-
-  if (suppressed) return null;
-
-  function submitFeedback() {
-    const trimmed = comment.trim();
-    if (!trimmed) return;
-    saveFeedbackItem({
-      id: `feedback_${Date.now()}`,
-      category,
-      rating: Number(rating),
-      comment: trimmed,
-      message: trimmed,
-      screenshotDescription: screenshotDescription.trim(),
-      status: BETA_STATUS,
-      version: APP_VERSION,
-      buildDate: APP_BUILD_DATE,
-      screen: window.location.hash || window.location.pathname,
-      createdAt: new Date().toISOString()
-    });
-    setComment('');
-    setScreenshotDescription('');
-    setRating(5);
-    setSaved(true);
-    setTimeout(() => setOpen(false), 900);
-  }
-
-  return <>
-    <button type="button" className="beta-feedback-fab" aria-label="Maklum Balas Beta" title="Maklum Balas Beta" onClick={() => { setSaved(false); setOpen(true); }}><IconGlyph name="message" decorative /><span>Maklum Balas Beta</span></button>
-    {open && <div className="beta-feedback-overlay" role="dialog" aria-modal="true" aria-labelledby="beta-feedback-title">
-      <section className="beta-feedback-panel">
-        <div className="beta-feedback-head"><div className="modal-brand-title"><BrandLogo iconOnly size="sm" /><div><p className="eyebrow">Beta Tertutup</p><h2 id="beta-feedback-title">Maklum Balas</h2></div></div><button ref={closeRef} type="button" className="ghost" onClick={() => setOpen(false)}>Tutup</button></div>
-        <label id="feedback-category-label">Kategori</label>
-        <div className="feedback-category-grid" role="group" aria-labelledby="feedback-category-label">{categories.map(item => <button type="button" key={item} className={category === item ? '' : 'secondary'} aria-pressed={category === item} onClick={() => setKategori(item)}>{item}</button>)}</div>
-        <label id="feedback-rating-label">Rating</label>
-        <div className="feedback-rating-grid" role="group" aria-labelledby="feedback-rating-label">{[1, 2, 3, 4, 5].map(item => <button type="button" key={item} className={rating === item ? '' : 'secondary'} aria-pressed={rating === item} onClick={() => setRating(item)}>{item}</button>)}</div>
-        <label htmlFor="feedback-comment">Komen</label>
-        <textarea id="feedback-comment" value={comment} onChange={event => setComment(event.target.value)} placeholder="Apa yang berlaku? Apa yang patut diperbaiki?" />
-        <label htmlFor="feedback-screenshot-description">Deskripsi screenshot</label>
-        <textarea id="feedback-screenshot-description" value={screenshotDescription} onChange={event => setScreenshotDescription(event.target.value)} placeholder="Terangkan apa yang kelihatan dalam screenshot, jika ada." />
-        {saved && <p className="autosave-note">Maklum balas disimpan pada peranti ini.</p>}
-        <button type="button" className="full" onClick={submitFeedback} disabled={!comment.trim()}>Simpan Maklum Balas</button>
-      </section>
-    </div>}
-  </>;
 }
 
 function Login({ onStart, onBack, onSupabaseReady, guestProfile, onResumeGuest }) {
