@@ -8,7 +8,7 @@ import UnsupportedYearScreen from '../../src/components/learning/UnsupportedYear
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
-const source = readFileSync(new URL('../../src/App.jsx', import.meta.url), 'utf8');
+const source = readFileSync('src/App.jsx', 'utf8');
 let host;
 let root;
 
