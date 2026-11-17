@@ -1426,8 +1426,6 @@ export default function App() {
   // unsupported/planned year must never display Year 2 questions.
   const activeStudentYear = String(profile?.year || 'Tahun 2').trim();
   const activeYearBankReady = activeStudentYear === 'Tahun 2';
-  const activeStudentYearRef = useRef(activeStudentYear);
-  activeStudentYearRef.current = activeStudentYear;
   const [adaptiveProfile, setAdaptiveProfile] = useState(() => loadAdaptiveStudentProfile(getStoredLearningIdentity(loadProfile())));
   const [gamificationProfile, setGamificationProfile] = useState(() => loadGamificationState(getStoredLearningIdentity(loadProfile())));
   const [resume, setResume] = useState(() => loadResume(getStoredLearningIdentity(loadProfile())));
@@ -4351,7 +4349,7 @@ export default function App() {
     const resumeMatchesSelectedSubject = Boolean(resumeSubjectId && resumeSubjectId === targetSubjectId);
     if (resumeMatchesSelectedSubject && practiceResume && !practiceResume.completed && Array.isArray(practiceResume.questions) && practiceResume.questions.length) {
       await startResume(practiceResume);
-      return true;
+      return subjectLoadGateRef.current.isCurrent(lease);
     }
     const subjectDailyQuestionCount = getSubjectDailyQuestionCount(targetSubjectId);
     if (!isPremiumUser && subjectDailyQuestionCount >= FREE_DAILY_QUESTION_LIMIT) {
