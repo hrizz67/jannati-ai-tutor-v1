@@ -105,6 +105,7 @@ export function compareMultiYearRollbackSnapshots(original, candidate) {
     proposedWrites: 0,
     proposedDeletes: 0,
     exactMatch: findings.length === 0,
+    checkedKeyTypes: MIGRATION_RECOVERY_STORAGE_KEYS.length,
     verifiedKeyTypes: verifiedKeys,
     findings: [...findings]
   });
@@ -114,19 +115,23 @@ export function compareMultiYearRollbackSnapshots(original, candidate) {
   }
 
   let verified = 0;
+  let presentProtectedKeys = 0;
   for (const key of MIGRATION_RECOVERY_STORAGE_KEYS) {
     const left = descriptorString(original, key);
     const right = descriptorString(candidate, key);
+    if (left.present || right.present) presentProtectedKeys += 1;
     if (left.invalid || right.invalid) {
       findings.push({ code: 'invalid_or_oversized_backup_value', source: key });
     } else if (left.present !== right.present) {
       findings.push({ code: 'missing_or_added_backup_key', source: key });
     } else if (left.present && left.value !== right.value) {
       findings.push({ code: 'rollback_payload_mismatch', source: key });
-    } else {
+    } else if (left.present && right.present) {
       verified += 1;
     }
   }
+  // Two empty objects are not proof that a recoverable backup was captured.
+  if (presentProtectedKeys === 0) findings.push({ code: 'no_protected_snapshot_data' });
   // A future/new key type cannot be silently discarded by the proposed
   // backup schema. No unknown key names are returned in the audit output.
   const unknown = Object.keys(original).concat(Object.keys(candidate))
