@@ -116,6 +116,18 @@ describe('M1-F recovery design-only snapshot comparisons', () => {
       .toContainEqual({ code: 'invalid_or_oversized_backup_value', source: RESUME_KEY });
   });
 
+  it('rejects accessor-based snapshots without evaluating personal-data getters', () => {
+    const hostile = {};
+    Object.defineProperty(hostile, RESUME_SLOTS_KEY, {
+      enumerable: true,
+      get() { throw new Error('must not evaluate snapshot getter'); }
+    });
+    const plan = planMultiYearMigrationRecovery(hostile, selection);
+    expect(plan.canApply).toBe(false);
+    expect(plan.findingCodes).toContain('invalid_snapshot');
+    expect(plan.presentKeyTypes).toBe(0);
+  });
+
   it('is not a working backup, does not touch browser storage, and stays outside App', () => {
     const source = readFileSync('src/services/multiYearMigrationRecoveryPlan.js', 'utf8');
     const app = readFileSync('src/App.jsx', 'utf8');
