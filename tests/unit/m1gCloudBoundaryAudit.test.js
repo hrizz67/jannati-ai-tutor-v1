@@ -164,6 +164,18 @@ describe('M1-G read-only cloud / year integration audit', () => {
     expect(auditMultiYearCloudBoundary(invalid).findings).toContain('cloud_invalid_cleared_tombstones');
   });
 
+  it('also rejects drift in acknowledged cleared tombstones', () => {
+    const tombstone = { accountId, childId, clearedAt: '2026-11-01T00:00:00Z' };
+    const changed = { ...tombstone, clearedAt: '2026-11-02T00:00:00Z' };
+    const report = auditMultiYearCloudBoundary(fixture({
+      local: { [RESUME_TOMBSTONES_KEY]: JSON.stringify({ [slot]: tombstone }) },
+      cloud: { [RESUME_TOMBSTONES_KEY]: JSON.stringify({ [slot]: changed }) }
+    }));
+    expect(report.findings).toContain('cleared_tombstone_drift');
+    expect(report.canMerge).toBe(false);
+    expect(JSON.stringify(report)).not.toContain('2026-11-01');
+  });
+
   it('detects stale cloud mutation acknowledgements and foreign child outbox entries', () => {
     const report = auditMultiYearCloudBoundary(fixture({
       syncState: {
