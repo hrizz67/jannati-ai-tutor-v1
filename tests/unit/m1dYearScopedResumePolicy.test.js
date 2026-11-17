@@ -43,8 +43,8 @@ describe('M1-D year/curriculum resume isolation policy', () => {
   it('derives distinct Year 1 and Year 3 future planning keys for the same child and topic', () => {
     const year1 = makeResume({ year: 'Tahun 1', curriculumId: 'kp2027' });
     const year3 = makeResume({ year: 'Tahun 3', curriculumId: 'kssr-current' });
-    const key1 = getYearScopedResumeScopeKey(year1, { year: 'Tahun 1' });
-    const key3 = getYearScopedResumeScopeKey(year3, { year: 'Tahun 3' });
+    const key1 = getYearScopedResumeScopeKey(year1, { year: 'Tahun 1', childId: 'child-a', accountId: 'account-1' });
+    const key3 = getYearScopedResumeScopeKey(year3, { year: 'Tahun 3', childId: 'child-a', accountId: 'account-1' });
     const oldKey = getResumeScopeKey(year1);
     expect(key1).not.toBe(key3);
     expect(key1).not.toBe(oldKey);
@@ -93,10 +93,30 @@ describe('M1-D year/curriculum resume isolation policy', () => {
       .toThrow(/does not match/);
     expect(() => getYearScopedResumeScopeKey(makeResume({
       year: 'Tahun 3', curriculumId: 'kssr-current', childId: '', studentId: 'default'
-    }), { year: 'Tahun 3' })).toThrow(/requires matching explicit child and account/);
+    }), { year: 'Tahun 3', childId: 'child-a', accountId: 'account-1' })).toThrow(/requires matching explicit child and account/);
     expect(() => getYearScopedResumeScopeKey(makeResume({
       year: 'Tahun 1', curriculumId: 'kp2027', accountId: ''
-    }), { year: 'Tahun 1' })).toThrow(/requires matching explicit child and account/);
+    }), { year: 'Tahun 1', childId: 'child-a', accountId: 'account-1' })).toThrow(/requires matching explicit child and account/);
+  });
+
+  it('does not reuse future keys across accounts or accept an implicit account/child selection', () => {
+    const record = makeResume({ year: 'Tahun 3', curriculumId: 'kssr-current' });
+    const selection = { year: 'Tahun 3', childId: 'child-a', accountId: 'account-1' };
+    const original = getYearScopedResumeScopeKey(record, selection);
+    expect(original).toContain('::account-1::child-a::');
+    expect(() => getYearScopedResumeScopeKey(record, { year: 'Tahun 3' }))
+      .toThrow(/requires matching explicit child and account/);
+    expect(() => getYearScopedResumeScopeKey(record, { year: 'Tahun 3', childId: 'child-a', accountId: 'account-2' }))
+      .toThrow(/requires matching explicit child and account/);
+    const otherAccountRecord = makeResume({ year: 'Tahun 3', curriculumId: 'kssr-current', accountId: 'account-2' });
+    expect(getYearScopedResumeScopeKey(otherAccountRecord, { ...selection, accountId: 'account-2' })).not.toBe(original);
+  });
+
+  it('rejects contradictory nested child/account identity rather than selecting one hint', () => {
+    const contradictory = makeResume({ state: { childId: 'child-other', accountId: 'account-2' } });
+    expect(isYearScopedResumeReadable(contradictory, {
+      year: 'Tahun 2', childId: 'child-a', accountId: 'account-1'
+    })).toBe(false);
   });
 
   it('does not activate a new storage path, migrate browser data or modify original records', () => {
