@@ -12,7 +12,7 @@ describe('M1-B active-year UI subject boundary', () => {
     expect(source).toContain('Bank soalan bagi tahun profil ini belum diluluskan.');
     expect(source.indexOf('if (!activeYearBankReady && !showAccountLogin')).toBeLessThan(source.indexOf('if (showOnboarding && !showAccountLogin)'));
     expect(source.indexOf('if (!activeYearBankReady && !showAccountLogin')).toBeLessThan(source.indexOf('if (loadingSubject) return <BetaChrome'));
-    expect(source.indexOf('if (!activeYearBankReady) return <BetaChrome')).toBeLessThan(source.indexOf("if (screen === 'quiz') {\n    const question = currentQuestion()"));
+    expect(source.indexOf('if (!activeYearBankReady && !showAccountLogin')).toBeLessThan(source.indexOf("if (screen === 'quiz') {\n    const question = currentQuestion()"));
   });
 
   it('routes selected and background-loaded subjects through explicit guarded year', () => {
