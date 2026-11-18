@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
-  LEGACY_RESUME_KEYS,
   RESUME_KEY,
   RESUME_SLOTS_KEY,
   RESUME_TOMBSTONES_KEY,
