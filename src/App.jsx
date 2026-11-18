@@ -21,6 +21,7 @@ import JatiAvatar from './components/JatiAvatar';
 import VoiceButton from './components/VoiceButton.jsx';
 import QuizFeedbackAccessibility from './components/questions/QuizFeedbackAccessibility.jsx';
 import { createYear2AsyncOwnerGate } from './services/yearOwnedAsyncSubjectGate.js';
+import { createCloudRevisionAcceptancePolicy } from './services/cloudRevisionAcceptance.js';
 const QuizSpeechConsent = React.lazy(() => import('./components/speech/QuizSpeechConsent.jsx'));
 const QuizDiagnosticsPanel = React.lazy(() => import('./components/questions/QuizDiagnosticsPanel.jsx'));
 const BetaFeedbackButton = React.lazy(() => import('./components/feedback/BetaFeedbackButton.jsx'));
@@ -1496,7 +1497,7 @@ export default function App() {
   const subjectLoadGateRef = useRef(null);
   if (!subjectLoadGateRef.current) subjectLoadGateRef.current = createYear2AsyncOwnerGate();
   const cloudRestoreGateRef = useRef(null);
-  if (!cloudRestoreGateRef.current) cloudRestoreGateRef.current = createYear2AsyncOwnerGate();
+  if (!cloudRestoreGateRef.current) cloudRestoreGateRef.current = createCloudRevisionAcceptancePolicy();
   // Update on every render: async completions compare against the *current*
   // account, child and grade, not the closure from the old learning screen.
   if (subjectLoadGateRef.current.setOwner({
@@ -1811,14 +1812,17 @@ export default function App() {
     }, context);
   }
 
-  function rememberCloudEnvelope(accountId, result) {
-    const data = result?.data;
-    if (!accountId || result?.error || !data) return;
-    cloudEnvelopeRef.current = { ...result, accountId };
-    setCloudSyncInfo({
-      revision: Number(result.revision) || 0,
-      serverUpdatedAt: String(result.serverUpdatedAt || '')
-    });
+  function rememberCloudEnvelope(accountId, result, lease = cloudRestoreGateRef.current.capture()) {
+    const acceptance = cloudRestoreGateRef.current.accept(lease, result, { accountId });
+    if (!acceptance.accepted) return acceptance;
+    if (acceptance.advanced) {
+      cloudEnvelopeRef.current = acceptance.envelope;
+      setCloudSyncInfo({
+        revision: Number(acceptance.envelope.revision) || 0,
+        serverUpdatedAt: String(acceptance.envelope.serverUpdatedAt || '')
+      });
+    }
+    return acceptance;
   }
 
   function queueCloudLearningSave({ markMutation = true } = {}) {
@@ -1856,6 +1860,7 @@ export default function App() {
       .catch(() => false)
       .then(async () => {
         const operationAccountId = accountUser.id;
+        const writeLease = cloudRestoreGateRef.current.capture();
         let writeStarted = false;
         try {
           if (getActiveStorageScopeId() !== operationAccountId) return false;
@@ -1935,12 +1940,29 @@ export default function App() {
           const ok = Boolean(syncResult.ok);
           const payload = syncResult.payload || {};
           if (ok) {
+            const acceptance = cloudRestoreGateRef.current.isCurrent(writeLease)
+              ? rememberCloudEnvelope(operationAccountId, { ...syncResult, data: payload })
+              : { accepted: false, reason: 'stale_owner' };
+            if (!acceptance.accepted || !cloudRestoreGateRef.current.isAccepted(acceptance.token)) {
+              pendingOfflineCloudSaveRef.current = true;
+              setPendingCloudMutation(operationAccountId, true);
+              captureCloudSyncFailure(new Error(`cloud_revision_${acceptance.reason || 'superseded'}`), {
+                phase: 'write',
+                rpc: 'save_learning_data_v4',
+                accountId: operationAccountId,
+                childId: activeChildId,
+                dirtyChildCount: dirtyChildIds.length,
+                pendingMutation: true,
+                cachedEnvelopeUsed: Boolean(knownCloudEnvelope)
+              });
+              setCloudSyncStatus('error');
+              return false;
+            }
             const pendingResumeDelete = acknowledgeResumeTombstones(
               syncResult.acknowledgedResumeTombstones,
               undefined,
               operationAccountId
             );
-            rememberCloudEnvelope(operationAccountId, { ...syncResult, data: payload });
             const preserveLocalChildIds = dirtyChildIds.filter(childId => (
               (childMutationVersionRef.current.get(childId) || 0) !== submittedMutationVersions.get(childId)
             ));
@@ -2412,6 +2434,7 @@ export default function App() {
     setCloudSyncInfo({ revision: 0, serverUpdatedAt: '' });
     lastCloudSignatureRef.current = '';
     cloudEnvelopeRef.current = {};
+    cloudRestoreGateRef.current.reset();
     cloudActivityWritePolicyRef.current.reset();
     cloudWriteGuardRef.current = { accountId: '', blocked: false, serverProfileCount: 0, reason: '' };
     setProfile({ ...defaultProfile });
@@ -2534,6 +2557,7 @@ export default function App() {
           setCloudHydratedAccountId('');
           lastCloudSignatureRef.current = '';
           cloudEnvelopeRef.current = {};
+          cloudRestoreGateRef.current.reset();
         }
         return;
       }
@@ -2544,7 +2568,10 @@ export default function App() {
       const loadStudentLearning = currentHash !== '#/admin' && currentHash !== '#/admin/premium';
       setAccessProfile(current => String(current?.id || '') === String(user.id) ? current : null);
       setCloudHydratedAccountId('');
-      cloudEnvelopeRef.current = {};
+      if (cloudEnvelopeRef.current.accountId !== user.id) {
+        cloudEnvelopeRef.current = {};
+        cloudRestoreGateRef.current.reset();
+      }
       cloudWriteGuardRef.current = { accountId: user.id, blocked: false, serverProfileCount: 0, reason: '' };
       if (loadStudentLearning) {
         hydrationStageByAccount.set(user.id, 'activate-device');
@@ -2619,6 +2646,11 @@ export default function App() {
         serverUpdatedAt: '',
         error: new Error('cloud_hydration_unavailable')
       };
+      const hydrationRestoreLease = cloudRestoreGateRef.current.capture();
+      let acceptedRevisionToken = null;
+      const isCurrentCloudHydration = () => isCurrentHydration()
+        && cloudRestoreGateRef.current.isCurrent(hydrationRestoreLease)
+        && (!acceptedRevisionToken || cloudRestoreGateRef.current.isAccepted(acceptedRevisionToken));
       if (cloudResult.error) captureCloudSyncFailure(cloudResult, {
         phase: 'read',
         rpc: 'get_learning_data_v3',
@@ -2638,7 +2670,12 @@ export default function App() {
       }
       const cloudLearningData = cloudResult.data || {};
       if (!cloudResult.error) {
-        rememberCloudEnvelope(user.id, cloudResult);
+        const acceptance = rememberCloudEnvelope(user.id, cloudResult, hydrationRestoreLease);
+        if (!acceptance.accepted) {
+          setCloudSyncStatus('idle');
+          return;
+        }
+        acceptedRevisionToken = acceptance.token;
       }
       const cloudHasProfileDuplicates = !cloudResult.error
         && hasRecoverableChildProfileDuplicates(cloudLearningData);
@@ -2709,9 +2746,9 @@ export default function App() {
         const restoreResult = await restoreCloudLearningSnapshotResult(
           cloudLearningData,
           readActiveChildId(),
-          () => isCurrentHydration() && !hasPendingCloudChanges(user.id)
+          () => isCurrentCloudHydration() && !hasPendingCloudChanges(user.id)
         );
-        if (!isCurrentHydration()) return;
+        if (!isCurrentCloudHydration()) return;
         if (!restoreResult) {
           lastCloudSignatureRef.current = '';
           setCloudSyncStatus('idle');
@@ -3169,12 +3206,20 @@ export default function App() {
 
     const handleCloudData = async cloudResult => {
       const restoreLease = cloudRestoreGateRef.current.capture();
+      let acceptedRevisionToken = null;
       const isCurrentOwner = () => !cancelled
         && getActiveStorageScopeId() === accountId
         && cloudRestoreGateRef.current.isCurrent(restoreLease);
-      const isCurrentRestore = () => isCurrentOwner() && !hasPendingCloudChanges(accountId);
+      const isCurrentRestore = () => isCurrentOwner()
+        && cloudRestoreGateRef.current.isAccepted(acceptedRevisionToken)
+        && !hasPendingCloudChanges(accountId);
       if (!isCurrentOwner()) return;
-      rememberCloudEnvelope(accountId, cloudResult);
+      const acceptance = rememberCloudEnvelope(accountId, cloudResult, restoreLease);
+      if (!acceptance.accepted) {
+        if (hasPendingCloudChanges(accountId)) void queueCloudLearningSave({ markMutation: false });
+        return;
+      }
+      acceptedRevisionToken = acceptance.token;
       if (hasPendingCloudChanges(accountId)) {
         void queueCloudLearningSave({ markMutation: false });
         return;
@@ -3731,13 +3776,17 @@ export default function App() {
     // A manual check must never turn a stale device into the source of truth.
     // With no pending outbox, it is strictly a pull from the server.
     const operationAccountId = accountUser.id;
+    const restoreLease = cloudRestoreGateRef.current.capture();
+    let acceptedRevisionToken = null;
     const syncSequence = ++accountSyncSequenceRef.current;
     cloudReadPendingRef.current = syncSequence;
     setCloudOperationBusy(true);
     setCloudSyncStatus('syncing');
     const isCurrent = () => cloudReadPendingRef.current === syncSequence
       && accountSyncSequenceRef.current === syncSequence
-      && getActiveStorageScopeId() === operationAccountId;
+      && getActiveStorageScopeId() === operationAccountId
+      && cloudRestoreGateRef.current.isCurrent(restoreLease)
+      && (!acceptedRevisionToken || cloudRestoreGateRef.current.isAccepted(acceptedRevisionToken));
     try {
       const cloudResult = await loadCloudLearningDataResult(supabase);
       if (!isCurrent()) return;
@@ -3757,7 +3806,12 @@ export default function App() {
         setCloudSyncStatus('idle');
         return;
       }
-      rememberCloudEnvelope(operationAccountId, cloudResult);
+      const acceptance = rememberCloudEnvelope(operationAccountId, cloudResult, restoreLease);
+      if (!acceptance.accepted) {
+        setCloudSyncStatus('idle');
+        return;
+      }
+      acceptedRevisionToken = acceptance.token;
       if (Number(cloudResult.protocolVersion) < CLOUD_SYNC_PROTOCOL_VERSION) {
         setCloudSyncStatus('upgrade-required');
         setRecoveryMessages(prev => [...prev, 'Sync memerlukan kemas kini. Data kamu masih selamat pada peranti ini.']);
@@ -3802,6 +3856,7 @@ export default function App() {
         if (!restoreResult.snapshotPersisted) announceRecoveryCacheWarning(restoreResult);
         captureAccountSnapshot(operationAccountId);
       }
+      if (!isCurrent()) return;
       lastCloudSignatureRef.current = getCloudResultSignature(cloudResult);
       setCloudSyncStatus('loaded');
       setRecoveryMessages(prev => [...prev, 'Peranti ini sudah menggunakan revision cloud terkini.']);
@@ -3849,6 +3904,7 @@ export default function App() {
     if (!window.confirm('Muat data cloud dan gantikan data pada peranti ini?')) return;
     const operationAccountId = accountUser.id;
     const restoreLease = cloudRestoreGateRef.current.capture();
+    let acceptedRevisionToken = null;
     const syncSequence = ++accountSyncSequenceRef.current;
     cloudReadPendingRef.current = syncSequence;
     setCloudOperationBusy(true);
@@ -3856,7 +3912,8 @@ export default function App() {
     const isCurrent = () => cloudReadPendingRef.current === syncSequence
       && accountSyncSequenceRef.current === syncSequence
       && getActiveStorageScopeId() === operationAccountId
-      && cloudRestoreGateRef.current.isCurrent(restoreLease);
+      && cloudRestoreGateRef.current.isCurrent(restoreLease)
+      && (!acceptedRevisionToken || cloudRestoreGateRef.current.isAccepted(acceptedRevisionToken));
     try {
       const cloudResult = await loadCloudLearningDataResult(supabase);
       if (!isCurrent()) return;
@@ -3872,7 +3929,12 @@ export default function App() {
         setRecoveryMessages(prev => [...prev, 'Data cloud tidak dapat dimuat. Semak sambungan dan cuba lagi.']);
         return;
       }
-      rememberCloudEnvelope(operationAccountId, cloudResult);
+      const acceptance = rememberCloudEnvelope(operationAccountId, cloudResult, restoreLease);
+      if (!acceptance.accepted) {
+        setCloudSyncStatus('idle');
+        return;
+      }
+      acceptedRevisionToken = acceptance.token;
       const cloudData = cloudResult.data || {};
       if (!Object.keys(cloudData).length) {
         setCloudSyncStatus('empty');
@@ -3914,6 +3976,7 @@ export default function App() {
         ]);
         return;
       }
+      if (!isCurrent()) return;
       pendingOfflineCloudSaveRef.current = false;
       setPendingCloudMutation(operationAccountId, false);
       dirtyChildIdsRef.current.clear();

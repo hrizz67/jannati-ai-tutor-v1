@@ -87,7 +87,7 @@ describe('M1-J stale cloud restore ownership', () => {
 
   it('wires an independent account/child/year gate into manual and realtime cloud restores', () => {
     expect(app).toContain('const cloudRestoreGateRef = useRef(null);');
-    expect(app).toContain('cloudRestoreGateRef.current = createYear2AsyncOwnerGate();');
+    expect(app).toContain('cloudRestoreGateRef.current = createCloudRevisionAcceptancePolicy();');
     expect(app).toContain('cloudRestoreGateRef.current.setOwner({');
 
     const realtime = app.slice(

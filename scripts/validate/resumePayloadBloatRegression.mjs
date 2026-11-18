@@ -499,7 +499,16 @@ const app = fs.readFileSync('src/App.jsx', 'utf8');
 const learningSync = fs.readFileSync('src/services/learningSync.js', 'utf8');
 const learningSyncCoordinator = fs.readFileSync('src/services/learningSyncCoordinator.js', 'utf8');
 assert.match(app, /else \{[\s\S]{0,180}setPendingCloudMutation\(accountUser\.id, true\)/, 'Mutasi pending mesti kekal selepas save ditolak.');
-assert.match(app, /if \(ok\) \{[\s\S]{0,180}acknowledgeResumeTombstones\(/, 'App hanya boleh mengakui pending resume delete selepas save V4 berjaya.');
+const uploadAckSource = app.slice(
+  app.indexOf('const ok = Boolean(syncResult.ok);'),
+  app.indexOf('const syncErrorCode = String(syncResult.error?.message', app.indexOf('const ok = Boolean(syncResult.ok);'))
+);
+const acceptedRevisionIndex = uploadAckSource.indexOf('rememberCloudEnvelope(operationAccountId, { ...syncResult, data: payload })');
+const rejectedRevisionIndex = uploadAckSource.indexOf('if (!acceptance.accepted || !cloudRestoreGateRef.current.isAccepted(acceptance.token))');
+const resumeAcknowledgementIndex = uploadAckSource.indexOf('acknowledgeResumeTombstones(');
+assert.ok(acceptedRevisionIndex >= 0, 'Save V4 yang berjaya mesti melalui polisi penerimaan revision bersama.');
+assert.ok(rejectedRevisionIndex > acceptedRevisionIndex, 'Revision/ownership lapuk mesti ditolak sebelum acknowledgement.');
+assert.ok(resumeAcknowledgementIndex > rejectedRevisionIndex, 'App hanya boleh mengakui pending resume delete selepas revision save V4 diterima.');
 assert.match(app, /resume\(\?:_slots\|_tombstones\|_pending_tombstones\)/, 'Outbox pending resume tidak boleh disalin ke child snapshot.');
 assert.match(learningSyncCoordinator, /save_learning_data_v4/);
 assert.match(learningSyncCoordinator, /if \(result\.ok\)[\s\S]{0,260}acknowledgedResumeTombstones/, 'Coordinator hanya boleh mengembalikan acknowledgement pada hasil save yang berjaya.');
