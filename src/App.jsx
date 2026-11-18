@@ -1495,6 +1495,8 @@ export default function App() {
   const allSubjectsLoadRef = useRef(null);
   const subjectLoadGateRef = useRef(null);
   if (!subjectLoadGateRef.current) subjectLoadGateRef.current = createYear2AsyncOwnerGate();
+  const cloudRestoreGateRef = useRef(null);
+  if (!cloudRestoreGateRef.current) cloudRestoreGateRef.current = createYear2AsyncOwnerGate();
   // Update on every render: async completions compare against the *current*
   // account, child and grade, not the closure from the old learning screen.
   if (subjectLoadGateRef.current.setOwner({
@@ -1502,6 +1504,11 @@ export default function App() {
     childId: activeChildId,
     year: activeStudentYear
   })) allSubjectsLoadRef.current = null;
+  cloudRestoreGateRef.current.setOwner({
+    accountId: learningIdentity.accountId,
+    childId: activeChildId,
+    year: activeStudentYear
+  });
   const [loadingSubject, setLoadingSubject] = useState(true);
   const [activeSubject, setActiveSubject] = useState(null);
   const [activeTopic, setActiveTopic] = useState(null);
@@ -2204,6 +2211,7 @@ export default function App() {
     // Snapshot checks have succeeded. Cancel old async work only for a
     // committed switch; a rejected switch must not strand the current loader.
     subjectLoadGateRef.current.invalidate();
+    cloudRestoreGateRef.current.invalidate();
     repairImportedLearningProfile();
     localStorage.setItem(ACTIVE_CHILD_KEY, target.id);
     clearTransientChildState();
@@ -2273,6 +2281,7 @@ export default function App() {
       resetSmartQuestionState();
       localStorage.setItem(ACTIVE_CHILD_KEY, nextChild.id);
       subjectLoadGateRef.current.invalidate();
+      cloudRestoreGateRef.current.invalidate();
       clearTransientChildState();
       setChildProfiles(nextProfiles);
       setActiveChildId(nextChild.id);
@@ -2377,6 +2386,7 @@ export default function App() {
   }
 
   function resetSignedOutAccountState(scopedAccountId = '') {
+    cloudRestoreGateRef.current.invalidate();
     const previousAccountId = String(scopedAccountId || '').trim();
     const activeScopedAccountId = String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
     if (previousAccountId && activeScopedAccountId === previousAccountId) {
@@ -3158,7 +3168,12 @@ export default function App() {
     const accountId = accountUser.id;
 
     const handleCloudData = async cloudResult => {
-      if (cancelled || getActiveStorageScopeId() !== accountId) return;
+      const restoreLease = cloudRestoreGateRef.current.capture();
+      const isCurrentOwner = () => !cancelled
+        && getActiveStorageScopeId() === accountId
+        && cloudRestoreGateRef.current.isCurrent(restoreLease);
+      const isCurrentRestore = () => isCurrentOwner() && !hasPendingCloudChanges(accountId);
+      if (!isCurrentOwner()) return;
       rememberCloudEnvelope(accountId, cloudResult);
       if (hasPendingCloudChanges(accountId)) {
         void queueCloudLearningSave({ markMutation: false });
@@ -3184,9 +3199,14 @@ export default function App() {
         void queueCloudLearningSave({ markMutation: false });
         return;
       }
-      skipNextCloudSaveRef.current = true;
       const activeChildBeforeCloudRestore = readActiveChildId();
-      const restoreResult = await restoreCloudLearningSnapshotResult(cloudResult.data, activeChildBeforeCloudRestore);
+      const restoreResult = await restoreCloudLearningSnapshotResult(
+        cloudResult.data,
+        activeChildBeforeCloudRestore,
+        () => isCurrentRestore()
+      );
+      if (!restoreResult || !isCurrentRestore()) return;
+      skipNextCloudSaveRef.current = true;
       if (!restoreResult.ok) {
         lastCloudSignatureRef.current = '';
         setCloudSyncStatus('error');
@@ -3822,65 +3842,109 @@ export default function App() {
       setRecoveryMessages(prev => [...prev, 'Data cloud tidak dimuat kerana peranti ini masih mempunyai perubahan yang belum diakui server.']);
       return;
     }
+    if (cloudWritePendingRef.current || cloudReadPendingRef.current) {
+      setRecoveryMessages(prev => [...prev, 'Operasi cloud masih berjalan. Tunggu sebentar.']);
+      return;
+    }
     if (!window.confirm('Muat data cloud dan gantikan data pada peranti ini?')) return;
+    const operationAccountId = accountUser.id;
+    const restoreLease = cloudRestoreGateRef.current.capture();
+    const syncSequence = ++accountSyncSequenceRef.current;
+    cloudReadPendingRef.current = syncSequence;
+    setCloudOperationBusy(true);
     setCloudSyncStatus('syncing');
-    const cloudResult = await loadCloudLearningDataResult(supabase);
-    if (cloudResult.error) {
-      captureCloudSyncFailure(cloudResult, {
-        phase: 'read',
+    const isCurrent = () => cloudReadPendingRef.current === syncSequence
+      && accountSyncSequenceRef.current === syncSequence
+      && getActiveStorageScopeId() === operationAccountId
+      && cloudRestoreGateRef.current.isCurrent(restoreLease);
+    try {
+      const cloudResult = await loadCloudLearningDataResult(supabase);
+      if (!isCurrent()) return;
+      if (cloudResult.error) {
+        captureCloudSyncFailure(cloudResult, {
+          phase: 'read',
+          rpc: 'get_learning_data_v3',
+          accountId: operationAccountId,
+          childId: readActiveChildId(),
+          pendingMutation: false
+        });
+        setCloudSyncStatus('error');
+        setRecoveryMessages(prev => [...prev, 'Data cloud tidak dapat dimuat. Semak sambungan dan cuba lagi.']);
+        return;
+      }
+      rememberCloudEnvelope(operationAccountId, cloudResult);
+      const cloudData = cloudResult.data || {};
+      if (!Object.keys(cloudData).length) {
+        setCloudSyncStatus('empty');
+        setRecoveryMessages(prev => [...prev, 'Tiada data cloud untuk akaun ini.']);
+        return;
+      }
+      const activeChildBeforeCloudRestore = activeChildId || readActiveChildId();
+      const restoreResult = await restoreCloudLearningSnapshotResult(
+        cloudData,
+        activeChildBeforeCloudRestore,
+        () => isCurrent() && !hasPendingCloudChanges(operationAccountId)
+      );
+      if (!isCurrent()) return;
+      if (!restoreResult) {
+        setCloudSyncStatus('idle');
+        return;
+      }
+      skipNextCloudSaveRef.current = true;
+      if (!restoreResult.ok) {
+        lastCloudSignatureRef.current = '';
+        setCloudSyncStatus('error');
+        setRecoveryMessages(prev => [
+          ...prev,
+          `Data cloud tidak dapat dimuat dengan selamat (kod ${restoreResult.reason}). Data peranti dikekalkan.`
+        ]);
+        return;
+      }
+      applyCloudRestoreResult(
+        restoreResult,
+        accountUser,
+        restoreResult.childId === activeChildBeforeCloudRestore
+      );
+      if (!restoreResult.activeStatePersisted) {
+        lastCloudSignatureRef.current = '';
+        setCloudSyncStatus('error');
+        setRecoveryMessages(prev => [
+          ...prev,
+          'Data cloud berjaya dibaca dan profil dikekalkan, tetapi storan peranti belum tersedia. Tiada data kosong dihantar ke server.'
+        ]);
+        return;
+      }
+      pendingOfflineCloudSaveRef.current = false;
+      setPendingCloudMutation(operationAccountId, false);
+      dirtyChildIdsRef.current.clear();
+      childMutationVersionRef.current.clear();
+      lastCloudSignatureRef.current = getCloudResultSignature(cloudResult);
+      captureAccountSnapshot(operationAccountId);
+      setCloudSyncStatus(Number(cloudResult.protocolVersion) < CLOUD_SYNC_PROTOCOL_VERSION ? 'upgrade-required' : 'loaded');
+      if (restoreResult.snapshotPersisted) {
+        setRecoveryMessages(prev => [...prev, 'Data cloud berjaya dimuat ke peranti ini.']);
+      } else {
+        announceRecoveryCacheWarning(restoreResult);
+      }
+    } catch (error) {
+      if (!isCurrent()) return;
+      captureCloudSyncFailure(error, {
+        phase: 'runtime',
         rpc: 'get_learning_data_v3',
-        accountId: accountUser.id,
+        accountId: operationAccountId,
         childId: readActiveChildId(),
         pendingMutation: false
       });
       setCloudSyncStatus('error');
-      setRecoveryMessages(prev => [...prev, 'Data cloud tidak dapat dimuat. Semak sambungan dan cuba lagi.']);
-      return;
-    }
-    rememberCloudEnvelope(accountUser.id, cloudResult);
-    const cloudData = cloudResult.data || {};
-    if (!Object.keys(cloudData).length) {
-      setCloudSyncStatus('empty');
-      setRecoveryMessages(prev => [...prev, 'Tiada data cloud untuk akaun ini.']);
-      return;
-    }
-    skipNextCloudSaveRef.current = true;
-    const activeChildBeforeCloudRestore = activeChildId || readActiveChildId();
-    const restoreResult = await restoreCloudLearningSnapshotResult(cloudData, activeChildBeforeCloudRestore);
-    if (!restoreResult.ok) {
-      lastCloudSignatureRef.current = '';
-      setCloudSyncStatus('error');
-      setRecoveryMessages(prev => [
-        ...prev,
-        `Data cloud tidak dapat dimuat dengan selamat (kod ${restoreResult.reason}). Data peranti dikekalkan.`
-      ]);
-      return;
-    }
-    applyCloudRestoreResult(
-      restoreResult,
-      accountUser,
-      restoreResult.childId === activeChildBeforeCloudRestore
-    );
-    if (!restoreResult.activeStatePersisted) {
-      lastCloudSignatureRef.current = '';
-      setCloudSyncStatus('error');
-      setRecoveryMessages(prev => [
-        ...prev,
-        'Data cloud berjaya dibaca dan profil dikekalkan, tetapi storan peranti belum tersedia. Tiada data kosong dihantar ke server.'
-      ]);
-      return;
-    }
-    pendingOfflineCloudSaveRef.current = false;
-    setPendingCloudMutation(accountUser.id, false);
-    dirtyChildIdsRef.current.clear();
-    childMutationVersionRef.current.clear();
-    lastCloudSignatureRef.current = getCloudResultSignature(cloudResult);
-    captureAccountSnapshot(accountUser.id);
-    setCloudSyncStatus(Number(cloudResult.protocolVersion) < CLOUD_SYNC_PROTOCOL_VERSION ? 'upgrade-required' : 'loaded');
-    if (restoreResult.snapshotPersisted) {
-      setRecoveryMessages(prev => [...prev, 'Data cloud berjaya dimuat ke peranti ini.']);
-    } else {
-      announceRecoveryCacheWarning(restoreResult);
+    } finally {
+      const current = isCurrent();
+      if (cloudReadPendingRef.current === syncSequence) {
+        cloudReadPendingRef.current = 0;
+        setCloudOperationBusy(cloudWritePendingRef.current);
+        if (current && !cloudWritePendingRef.current && hasPendingCloudChanges(operationAccountId)) {
+          void queueCloudLearningSave({ markMutation: false });
+        }
+      }
     }
   }
 
@@ -4656,7 +4720,10 @@ export default function App() {
         hasPendingChanges: hasPendingCloudChanges(exitingAccountId),
         syncPendingChanges: () => queueCloudLearningSave({ markMutation: false }),
         confirmUnsynced: () => window.confirm('Perubahan pembelajaran belum diakui server. Data kekal dalam backup akaun pada peranti ini. Log keluar juga?'),
-        invalidatePendingWork: () => { accountSyncSequenceRef.current += 1; },
+        invalidatePendingWork: () => {
+          accountSyncSequenceRef.current += 1;
+          cloudRestoreGateRef.current.invalidate();
+        },
         clearAuthenticatedState: () => resetSignedOutAccountState(exitingAccountId),
         timeoutMs: 8000
       });
