@@ -1813,16 +1813,18 @@ export default function App() {
   }
 
   function rememberCloudEnvelope(accountId, result, lease = cloudRestoreGateRef.current.capture()) {
-    const acceptance = cloudRestoreGateRef.current.accept(lease, result, { accountId });
-    if (!acceptance.accepted) return acceptance;
-    if (acceptance.advanced) {
-      cloudEnvelopeRef.current = acceptance.envelope;
-      setCloudSyncInfo({
-        revision: Number(acceptance.envelope.revision) || 0,
-        serverUpdatedAt: String(acceptance.envelope.serverUpdatedAt || '')
-      });
-    }
-    return acceptance;
+    return cloudRestoreGateRef.current.accept(lease, result, { accountId });
+  }
+
+  function commitCloudEnvelope(acceptance) {
+    const envelope = cloudRestoreGateRef.current.commit(acceptance?.token);
+    if (!envelope) return false;
+    cloudEnvelopeRef.current = envelope;
+    setCloudSyncInfo({
+      revision: Number(envelope.revision) || 0,
+      serverUpdatedAt: String(envelope.serverUpdatedAt || '')
+    });
+    return true;
   }
 
   function queueCloudLearningSave({ markMutation = true } = {}) {
@@ -1943,7 +1945,11 @@ export default function App() {
             const acceptance = cloudRestoreGateRef.current.isCurrent(writeLease)
               ? rememberCloudEnvelope(operationAccountId, { ...syncResult, data: payload })
               : { accepted: false, reason: 'stale_owner' };
-            if (!acceptance.accepted || !cloudRestoreGateRef.current.isAccepted(acceptance.token)) {
+            const committed = acceptance.accepted
+              && cloudRestoreGateRef.current.isAccepted(acceptance.token)
+              ? commitCloudEnvelope(acceptance)
+              : false;
+            if (!acceptance.accepted || !committed) {
               pendingOfflineCloudSaveRef.current = true;
               setPendingCloudMutation(operationAccountId, true);
               captureCloudSyncFailure(new Error(`cloud_revision_${acceptance.reason || 'superseded'}`), {
@@ -2669,13 +2675,14 @@ export default function App() {
         return;
       }
       const cloudLearningData = cloudResult.data || {};
+      let cloudAcceptance = null;
       if (!cloudResult.error) {
-        const acceptance = rememberCloudEnvelope(user.id, cloudResult, hydrationRestoreLease);
-        if (!acceptance.accepted) {
+        cloudAcceptance = rememberCloudEnvelope(user.id, cloudResult, hydrationRestoreLease);
+        if (!cloudAcceptance.accepted) {
           setCloudSyncStatus('idle');
           return;
         }
-        acceptedRevisionToken = acceptance.token;
+        acceptedRevisionToken = cloudAcceptance.token;
       }
       const cloudHasProfileDuplicates = !cloudResult.error
         && hasRecoverableChildProfileDuplicates(cloudLearningData);
@@ -2739,7 +2746,7 @@ export default function App() {
         && !Object.keys(cloudLearningData).length
         && !hasPendingLocalData
         && !cloudProtocolRequiresUpgrade;
-      lastCloudSignatureRef.current = cloudResult.error ? '' : getCloudResultSignature(cloudResult);
+      lastCloudSignatureRef.current = '';
       if (!cloudResult.error && Object.keys(cloudLearningData).length && !hasPendingLocalData) {
         skipNextCloudSaveRef.current = true;
         hydrationStageByAccount.set(user.id, 'restore-cloud');
@@ -2775,6 +2782,8 @@ export default function App() {
             scheduleHydrationRetry(user);
             return;
           }
+          if (!commitCloudEnvelope(cloudAcceptance)) return;
+          lastCloudSignatureRef.current = getCloudResultSignature(cloudResult);
           if (!restoreResult.snapshotPersisted) announceRecoveryCacheWarning(restoreResult);
           setCloudSyncStatus(cloudProtocolRequiresUpgrade ? 'upgrade-required' : 'loaded');
         }
@@ -2783,11 +2792,15 @@ export default function App() {
         if (!hasPendingLocalData) skipNextCloudSaveRef.current = true;
         setCloudSyncStatus(navigator.onLine === false ? 'offline' : 'error');
       } else if (hasPendingLocalData) {
+        if (!commitCloudEnvelope(cloudAcceptance)) return;
+        lastCloudSignatureRef.current = getCloudResultSignature(cloudResult);
         pendingOfflineCloudSaveRef.current = true;
         setCloudSyncStatus(cloudProtocolRequiresUpgrade
           ? 'upgrade-required'
           : resolveCloudSyncStatus(false, navigator.onLine === false ? 'offline' : 'idle'));
       } else {
+        if (!commitCloudEnvelope(cloudAcceptance)) return;
+        lastCloudSignatureRef.current = getCloudResultSignature(cloudResult);
         pendingOfflineCloudSaveRef.current = true;
         setPendingCloudMutation(user.id, true);
         setCloudSyncStatus(cloudProtocolRequiresUpgrade ? 'upgrade-required' : 'empty');
@@ -3224,15 +3237,22 @@ export default function App() {
         void queueCloudLearningSave({ markMutation: false });
         return;
       }
-      if (!cloudResult.data || !Object.keys(cloudResult.data).length) return;
+      if (!cloudResult.data || !Object.keys(cloudResult.data).length) {
+        commitCloudEnvelope(acceptance);
+        return;
+      }
       const cloudSignature = getCloudResultSignature(cloudResult);
-      if (cloudSignature === lastCloudSignatureRef.current) return;
+      if (cloudSignature === lastCloudSignatureRef.current) {
+        commitCloudEnvelope(acceptance);
+        return;
+      }
       const localLearningData = buildCloudLearningPayload();
       const recoveredGap = recoverMonotonicCloudGap(localLearningData, cloudResult.data, {
         localActiveChildId: readActiveChildId(),
         accountId
       });
       if (recoveredGap.recovered) {
+        if (!commitCloudEnvelope(acceptance)) return;
         recoveredGap.dirtyChildIds.forEach(childId => {
           dirtyChildIdsRef.current.add(childId);
           childMutationVersionRef.current.set(childId, (childMutationVersionRef.current.get(childId) || 0) + 1);
@@ -3267,6 +3287,7 @@ export default function App() {
         setCloudSyncStatus('error');
         return;
       }
+      if (!commitCloudEnvelope(acceptance)) return;
       captureAccountSnapshot(accountId);
       lastCloudSignatureRef.current = cloudSignature;
       setCloudSyncStatus('loaded');
@@ -3813,6 +3834,7 @@ export default function App() {
       }
       acceptedRevisionToken = acceptance.token;
       if (Number(cloudResult.protocolVersion) < CLOUD_SYNC_PROTOCOL_VERSION) {
+        if (!commitCloudEnvelope(acceptance)) return;
         setCloudSyncStatus('upgrade-required');
         setRecoveryMessages(prev => [...prev, 'Sync memerlukan kemas kini. Data kamu masih selamat pada peranti ini.']);
         return;
@@ -3853,8 +3875,11 @@ export default function App() {
           ]);
           return;
         }
+        if (!commitCloudEnvelope(acceptance)) return;
         if (!restoreResult.snapshotPersisted) announceRecoveryCacheWarning(restoreResult);
         captureAccountSnapshot(operationAccountId);
+      } else if (!commitCloudEnvelope(acceptance)) {
+        return;
       }
       if (!isCurrent()) return;
       lastCloudSignatureRef.current = getCloudResultSignature(cloudResult);
@@ -3937,6 +3962,7 @@ export default function App() {
       acceptedRevisionToken = acceptance.token;
       const cloudData = cloudResult.data || {};
       if (!Object.keys(cloudData).length) {
+        if (!commitCloudEnvelope(acceptance)) return;
         setCloudSyncStatus('empty');
         setRecoveryMessages(prev => [...prev, 'Tiada data cloud untuk akaun ini.']);
         return;
@@ -3977,6 +4003,7 @@ export default function App() {
         return;
       }
       if (!isCurrent()) return;
+      if (!commitCloudEnvelope(acceptance)) return;
       pendingOfflineCloudSaveRef.current = false;
       setPendingCloudMutation(operationAccountId, false);
       dirtyChildIdsRef.current.clear();

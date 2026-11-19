@@ -84,13 +84,18 @@ export function createCloudRevisionAcceptancePolicy(initialOwner = {}) {
       }
       generation += 1;
       const envelope = { ...result, accountId: owner.accountId };
-      current = { revision, fingerprint };
+      current = { revision, fingerprint, envelope };
       return {
         accepted: true,
         advanced: true,
         envelope,
         token: createToken()
       };
+    },
+    commit(token) {
+      return isCurrent(token) && current && token.generation === generation
+        ? current.envelope
+        : null;
     },
     isAccepted(token) {
       return isCurrent(token)
