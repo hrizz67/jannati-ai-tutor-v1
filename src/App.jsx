@@ -479,7 +479,7 @@ function readChildScopedData(childId = readActiveChildId()) {
   return snapshot;
 }
 
-function clearChildScopedData() {
+function clearChildScopedData(strict = false) {
   try {
     const keys = [];
     for (let index = 0; index < localStorage.length; index += 1) {
@@ -487,7 +487,8 @@ function clearChildScopedData() {
       if (isChildScopedDataKey(key)) keys.push(key);
     }
     keys.forEach(key => localStorage.removeItem(key));
-  } catch {
+  } catch (error) {
+    if (strict) throw error;
     // Keep the current child usable when storage cleanup is unavailable.
   }
 }
@@ -685,7 +686,7 @@ function captureOriginalChildSnapshot(childId) {
   }
 }
 
-function restoreChildSnapshot(snapshot = {}, expectedChildId = '', expectedAccountId = getActiveStorageScopeId()) {
+function restoreChildSnapshot(snapshot = {}, expectedChildId = '', expectedAccountId = getActiveStorageScopeId(), activate = false) {
   const snapshotChildId = String(snapshot?.__childSnapshotChildId || '').trim();
   const snapshotAccountId = String(snapshot?.__childSnapshotAccountId || '').trim();
   if (snapshotChildId && expectedChildId && snapshotChildId !== String(expectedChildId)) return false;
@@ -696,11 +697,12 @@ function restoreChildSnapshot(snapshot = {}, expectedChildId = '', expectedAccou
     return false;
   }
   const previousSnapshot = readChildScopedData(readActiveChildId());
-  clearChildScopedData();
   try {
+    clearChildScopedData(true);
     Object.entries(scoped.snapshot).forEach(([key, value]) => {
       if (isChildScopedDataKey(key, expectedChildId || snapshotChildId) && typeof value === 'string') localStorage.setItem(key, value);
     });
+    if (activate) localStorage.setItem(ACTIVE_CHILD_KEY, expectedChildId);
   } catch {
     clearChildScopedData();
     try {
@@ -897,11 +899,14 @@ function applyMergedCloudMetadata(payload = {}, activeChildId = '', preserveLoca
         persistChildRecoverySnapshot(key, raw);
       }
     });
-    const restoreMergedChild = childId => {
-      const raw = payload[`${CHILD_SNAPSHOT_PREFIX}${childId}`];
+    const restoreMergedChild = (childId, activate = false) => {
+      const raw = preservedChildren.has(childId) ? undefined : payload[`${CHILD_SNAPSHOT_PREFIX}${childId}`];
       const snapshot = typeof raw === 'string' ? JSON.parse(raw) : resolveChildSnapshot(childId);
-      return (snapshot && restoreChildSnapshot(snapshot, childId))
-        || typeof raw !== 'string';
+      if (snapshot) return activate
+        ? restoreChildSnapshot(snapshot, childId, undefined, true)
+        : restoreChildSnapshot(snapshot, childId);
+      if (typeof raw === 'string') return false;
+      return !activate || (!preservedChildren.has(childId) && restoreChildSnapshot({}, childId, undefined, true));
     };
     if (requestedActiveProfile) {
       if (preservedChildren.has(String(activeChildId || ''))) {
@@ -910,8 +915,7 @@ function applyMergedCloudMetadata(payload = {}, activeChildId = '', preserveLoca
     } else if (resolvedActiveChildId) {
       localStorage.removeItem(`${CHILD_SNAPSHOT_PREFIX}${activeChildId}`);
       localStorage.removeItem(`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${activeChildId}`);
-      localStorage.setItem(ACTIVE_CHILD_KEY, resolvedActiveChildId);
-      if (!restoreMergedChild(resolvedActiveChildId)) return failed;
+      if (!restoreMergedChild(resolvedActiveChildId, true)) return failed;
     }
     return { activeChildId: resolvedActiveChildId, persisted: true };
   } catch {
@@ -1947,11 +1951,7 @@ export default function App() {
             const acceptance = cloudRestoreGateRef.current.isCurrent(writeLease)
               ? rememberCloudEnvelope(operationAccountId, { ...syncResult, data: payload })
               : { accepted: false, reason: 'stale_owner' };
-            const committed = acceptance.accepted
-              && cloudRestoreGateRef.current.isAccepted(acceptance.token)
-              ? commitCloudEnvelope(acceptance)
-              : false;
-            if (!acceptance.accepted || !committed) {
+            if (!acceptance.accepted || !cloudRestoreGateRef.current.isAccepted(acceptance.token)) {
               pendingOfflineCloudSaveRef.current = true;
               setPendingCloudMutation(operationAccountId, true);
               captureCloudSyncFailure(new Error(`cloud_revision_${acceptance.reason || 'superseded'}`), {
@@ -1970,7 +1970,10 @@ export default function App() {
               (childMutationVersionRef.current.get(childId) || 0) !== submittedMutationVersions.get(childId)
             ));
             const postSaveResult = applyCloudPostSaveEffects({
-              applyMetadata: () => applyMergedCloudMetadata(payload, activeChildId, preserveLocalChildIds),
+              applyMetadata: () => {
+                const metadata = applyMergedCloudMetadata(payload, activeChildId, preserveLocalChildIds);
+                return metadata.persisted && !commitCloudEnvelope(acceptance) ? { persisted: false } : metadata;
+              },
               acknowledgeResume: () => acknowledgeResumeTombstones(
                 syncResult.acknowledgedResumeTombstones,
                 undefined,
