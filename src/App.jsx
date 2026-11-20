@@ -162,6 +162,7 @@ import { CLOUD_WRITE_DEBOUNCE_MS, createCloudActivityWritePolicy, resolveCloudSy
 import { initializeCloudSyncDiagnostic, recordCloudSyncDiagnostic } from './services/cloudSyncDiagnostics.js';
 import {
   acknowledgeCloudMutations,
+  applyCloudPostSaveEffects,
   markCloudMutation,
   resolvePendingCloudOutbox
 } from './services/cloudMutationOutbox.js';
@@ -910,11 +911,10 @@ function applyMergedCloudMetadata(payload = {}, activeChildId = '', preserveLoca
       const reconciledSnapshot = resolveChildSnapshot(resolvedActiveChildId);
       if (reconciledSnapshot) restoreChildSnapshot(reconciledSnapshot, resolvedActiveChildId);
     }
-    return resolvedActiveChildId;
+    return { activeChildId: resolvedActiveChildId, persisted: true };
   } catch {
-    // The completed cloud save remains valid even if optional local metadata refresh fails.
+    return { activeChildId, persisted: false };
   }
-  return activeChildId;
 }
 
 function clearAccountData() {
@@ -1964,15 +1964,40 @@ export default function App() {
               setCloudSyncStatus('error');
               return false;
             }
-            const pendingResumeDelete = acknowledgeResumeTombstones(
-              syncResult.acknowledgedResumeTombstones,
-              undefined,
-              operationAccountId
-            );
             const preserveLocalChildIds = dirtyChildIds.filter(childId => (
               (childMutationVersionRef.current.get(childId) || 0) !== submittedMutationVersions.get(childId)
             ));
-            const resolvedActiveChildId = applyMergedCloudMetadata(payload, activeChildId, preserveLocalChildIds);
+            const postSaveResult = applyCloudPostSaveEffects({
+              applyMetadata: () => applyMergedCloudMetadata(payload, activeChildId, preserveLocalChildIds),
+              acknowledgeResume: () => acknowledgeResumeTombstones(
+                syncResult.acknowledgedResumeTombstones,
+                undefined,
+                operationAccountId
+              ),
+              acknowledgeMutations: () => acknowledgeCloudMutations(
+                dirtyChildIdsRef.current,
+                childMutationVersionRef.current,
+                submittedMutationVersions
+              )
+            });
+            if (!postSaveResult.ok) {
+              pendingOfflineCloudSaveRef.current = true;
+              setPendingCloudMutation(operationAccountId, true);
+              captureCloudSyncFailure(postSaveResult.error || new Error(`cloud_${postSaveResult.phase}_failed`), {
+                phase: postSaveResult.phase,
+                rpc: 'save_learning_data_v4',
+                accountId: operationAccountId,
+                childId: activeChildId,
+                pendingMutation: true
+              });
+              setCloudSyncStatus('error');
+              return false;
+            }
+            const {
+              activeChildId: resolvedActiveChildId,
+              pendingResumeDelete,
+              remainingDirtyChildIds
+            } = postSaveResult;
             if (resolvedActiveChildId && (resolvedActiveChildId !== activeChildId || !preserveLocalChildIds.includes(activeChildId))) {
               skipNextCloudSaveRef.current = true;
               reloadCloudLearningState(resolvedActiveChildId, resolvedActiveChildId === activeChildId);
@@ -1986,11 +2011,6 @@ export default function App() {
               protocolVersion: syncResult.protocolVersion
             });
             setPendingProfileReconciliation(operationAccountId, false);
-            const remainingDirtyChildIds = acknowledgeCloudMutations(
-              dirtyChildIdsRef.current,
-              childMutationVersionRef.current,
-              submittedMutationVersions
-            );
             writePendingDirtyChildIds(operationAccountId, remainingDirtyChildIds);
             const stillPending = remainingDirtyChildIds.length > 0 || pendingResumeDelete;
             pendingOfflineCloudSaveRef.current = stillPending;
