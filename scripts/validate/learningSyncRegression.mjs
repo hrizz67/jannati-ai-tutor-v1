@@ -735,7 +735,8 @@ const selectChildSource = appSource.slice(
 );
 assert.match(selectChildSource, /skipNextCloudSaveRef\.current = true[\s\S]{0,120}reloadActiveChildState\(target\)/, 'Selecting a child must suppress the generic state autosave.');
 assert.doesNotMatch(selectChildSource, /markLocalLearningMutation|queueCloudLearningSave/, 'Selecting a child is device-local and must not create a cloud mutation.');
-assert.match(appSource, /activeChildHasNewerMutation[\s\S]{0,500}restoreChildSnapshot\(mergedActiveSnapshot, activeChildId\)/, 'An acknowledged active profile must restore its correctly scoped merged snapshot unless a newer mutation exists.');
+assert.match(appSource, /!preservedChildren\.has\(childId\)[\s\S]{0,700}preservedChildren\.has\(String\(activeChildId/, 'A newer mutation for any child must preserve its authoritative local snapshot.');
+assert.match(appSource, /const restoreMergedChild[\s\S]{0,300}JSON\.parse\(raw\)[\s\S]{0,200}restoreChildSnapshot\(snapshot, childId\)/, 'An acknowledged active profile must restore its scoped merged payload without depending on an optional cache write.');
 assert.match(appSource, /function backupChildBeforeDeletion[\s\S]{0,500}reason: 'manual-delete'/, 'Manual child deletion must create a recoverable hidden backup first.');
 const deleteChildSource = appSource.slice(
   appSource.indexOf('function handleDeleteChild'),
