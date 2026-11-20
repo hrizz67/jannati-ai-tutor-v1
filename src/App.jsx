@@ -487,8 +487,8 @@ function clearChildScopedData(strict = false) {
       if (isChildScopedDataKey(key)) keys.push(key);
     }
     keys.forEach(key => localStorage.removeItem(key));
-  } catch {
-    if (strict) throw new Error('Child projection cleanup failed');
+  } catch (error) {
+    if (strict) throw error;
     // Keep the current child usable when storage cleanup is unavailable.
   }
 }
