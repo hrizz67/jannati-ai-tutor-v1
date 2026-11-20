@@ -50,29 +50,48 @@ export default defineConfig(({ mode }) => {
     include: ['react-dom/client']
   },
   build: {
-    rollupOptions: {
+    rolldownOptions: {
       checks: {
         pluginTimings: false
       },
       output: {
-        manualChunks(id) {
-          const moduleId = id.replaceAll('\\', '/')
-          if (moduleId.includes('/node_modules/react/') || moduleId.includes('/node_modules/react-dom/') || moduleId.includes('/node_modules/scheduler/')) {
-            return 'vendor-react'
-          }
-          if (moduleId.includes('/node_modules/@supabase/')) {
-            return 'vendor-supabase'
-          }
-          if (moduleId.includes('/src/ai/speech/')) {
-            return 'speech-runtime'
-          }
-          if (/\/src\/(?:data\/bm(?:BinaAyat|PentaksiranSumatif|SimpulanBahasa)Questions|utils\/bmSentenceQuality)\.js$/.test(moduleId)) {
-            return 'bm-enrichment'
-          }
-          if (/\/src\/data\/math(?:Nombor|Tambah|Tolak|Darab|Bahagi|Wang|Masa|Panjang|JisimIsiPadu|Bentuk)Questions\.js$/.test(moduleId)) {
-            return 'math-enrichment'
-          }
-          return undefined
+        codeSplitting: {
+          groups: [
+            {
+              priority: 10,
+              name(id) {
+                const moduleId = id.replaceAll('\\', '/')
+                if (moduleId.includes('/node_modules/react/') || moduleId.includes('/node_modules/react-dom/') || moduleId.includes('/node_modules/scheduler/')) {
+                  return 'vendor-react'
+                }
+                if (moduleId.includes('/node_modules/@supabase/')) {
+                  return 'vendor-supabase'
+                }
+                if (moduleId.includes('/src/ai/speech/')) {
+                  return 'speech-runtime'
+                }
+                if (/\/src\/(?:data\/bm(?:BinaAyat|PentaksiranSumatif|SimpulanBahasa)Questions|utils\/bmSentenceQuality)\.js$/.test(moduleId)) {
+                  return 'bm-enrichment'
+                }
+                if (/\/src\/data\/math(?:Nombor|Tambah|Tolak|Darab|Bahagi|Wang|Masa|Panjang|JisimIsiPadu|Bentuk)Questions\.js$/.test(moduleId)) {
+                  return 'math-enrichment'
+                }
+                return null
+              }
+            },
+            {
+              // Keep the adaptive/profile graph shared by entry usage without
+              // eagerly pulling lazy-only consumers into the initial bundle.
+              name: 'app-shared',
+              priority: 0,
+              test(id) {
+                const moduleId = id.replaceAll('\\', '/')
+                return /\/src\/(?:ai\/(?:adaptive|memory|diversity|question|questionQuality|observation|profile|mistakes)(?:\/|Engine\.js$)|ai\/(?:studentIntelligence|learningCopy)\.js$|curriculum\/|utils\/(?:learnerProgressIntegrity|displayFormatter|canonicalProgress)\.js$|dashboard\/(?:EmptyState|dashboardHelpers)\.jsx$|data\/(?:contentSchema|subjects\/index)\.js$|services\/(?:parentAccessStorage|internalUiSurfaceVisibility)\.js$|components\/(?:feedback\/BetaFeedbackButton|questions\/QuizDiagnosticsPanel|speech\/QuizSpeechConsent|VoiceButton|learning\/UnsupportedYearScreen|BrandLogo)\.jsx$|config\/studentYears\.js$)/.test(moduleId)
+              },
+              entriesAware: true,
+              includeDependenciesRecursively: false
+            }
+          ]
         }
       }
     }

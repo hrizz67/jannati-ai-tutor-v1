@@ -33,6 +33,41 @@ export function acknowledgeCloudMutations(dirtyChildIds, mutationVersions, submi
 }
 
 /**
+ * Applies the fallible local effects of an acknowledged server save in a
+ * strict order. Outboxes must remain pending when merged metadata cannot be
+ * persisted or an earlier acknowledgement step fails.
+ */
+export function applyCloudPostSaveEffects({
+  applyMetadata,
+  acknowledgeResume,
+  acknowledgeMutations
+} = {}) {
+  let metadataResult;
+  try {
+    metadataResult = applyMetadata?.();
+  } catch (error) {
+    return { ok: false, phase: 'local_metadata', error };
+  }
+  if (!metadataResult?.persisted) {
+    return { ok: false, phase: 'local_metadata', error: null };
+  }
+
+  try {
+    const pendingResumeDelete = Boolean(acknowledgeResume?.());
+    const remainingDirtyChildIds = acknowledgeMutations?.() || [];
+    return {
+      ok: true,
+      phase: 'complete',
+      activeChildId: String(metadataResult.activeChildId || ''),
+      pendingResumeDelete,
+      remainingDirtyChildIds
+    };
+  } catch (error) {
+    return { ok: false, phase: 'outbox_acknowledgement', error };
+  }
+}
+
+/**
  * Resolves a legacy/interrupted pending marker against the cached cloud
  * envelope. It either reconstructs a child outbox or proves the marker stale.
  */
@@ -54,6 +89,7 @@ export function resolvePendingCloudOutbox({
 
 export default {
   acknowledgeCloudMutations,
+  applyCloudPostSaveEffects,
   markCloudMutation,
   resolvePendingCloudOutbox
 };

@@ -705,7 +705,20 @@ assert.match(egressSource, /if \(result\.migrationRequired\) onMigrationRequired
 assert.match(dashboardSource, /Kemas kini terakhir:/, 'The dashboard must show the latest cloud update time without exposing implementation jargon.');
 assert.doesNotMatch(dashboardSource, /Revision server:|Sync revisioned|Migration Data Integrity v3|RPC lama/, 'Learner-facing cloud status must not expose implementation jargon.');
 assert.match(appSource, /applyCloudRestoreResult\([\s\S]{0,180}restoreResult\.childId === activeChildBeforeCloudRestore/, 'A cloud pull must refresh active profile state without blindly resetting the active quiz UI.');
-assert.match(appSource, /preserveLocalChildIds = dirtyChildIds\.filter[\s\S]{0,500}applyMergedCloudMetadata\(payload, activeChildId, preserveLocalChildIds\)[\s\S]{0,350}reloadCloudLearningState\(resolvedActiveChildId, resolvedActiveChildId === activeChildId\)/, 'A server-acknowledged same-child merge must preserve the active quiz UI.');
+const postSaveSource = appSource.slice(
+  appSource.indexOf('const preserveLocalChildIds = dirtyChildIds.filter'),
+  appSource.indexOf('setChildProfiles(readChildProfiles())', appSource.indexOf('const preserveLocalChildIds = dirtyChildIds.filter'))
+);
+const postSaveEffectsIndex = postSaveSource.indexOf('applyCloudPostSaveEffects({');
+const metadataApplyIndex = postSaveSource.indexOf('applyMetadata: () => applyMergedCloudMetadata(payload, activeChildId, preserveLocalChildIds)');
+const postSaveFailureIndex = postSaveSource.indexOf('if (!postSaveResult.ok)');
+const resolvedChildIndex = postSaveSource.indexOf('activeChildId: resolvedActiveChildId');
+const sameChildReloadIndex = postSaveSource.indexOf('reloadCloudLearningState(resolvedActiveChildId, resolvedActiveChildId === activeChildId)');
+assert.ok(postSaveEffectsIndex >= 0, 'A server acknowledgement must enter the guarded local post-save phase.');
+assert.ok(metadataApplyIndex > postSaveEffectsIndex, 'Merged metadata must be the first fallible local post-save effect.');
+assert.ok(postSaveFailureIndex > metadataApplyIndex, 'A metadata persistence failure must stop before outbox success is published.');
+assert.ok(resolvedChildIndex > postSaveFailureIndex, 'The resolved child may only be consumed after local post-save success.');
+assert.ok(sameChildReloadIndex > resolvedChildIndex, 'A server-acknowledged same-child merge must preserve the active quiz UI.');
 const reloadActiveChildSource = appSource.slice(
   appSource.indexOf('function reloadActiveChildState'),
   appSource.indexOf('function reloadCloudLearningState')
