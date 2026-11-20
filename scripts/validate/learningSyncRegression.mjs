@@ -710,7 +710,7 @@ const postSaveSource = appSource.slice(
   appSource.indexOf('setChildProfiles(readChildProfiles())', appSource.indexOf('const preserveLocalChildIds = dirtyChildIds.filter'))
 );
 const postSaveEffectsIndex = postSaveSource.indexOf('applyCloudPostSaveEffects({');
-const metadataApplyIndex = postSaveSource.indexOf('applyMetadata: () => applyMergedCloudMetadata(payload, activeChildId, preserveLocalChildIds)');
+const metadataApplyIndex = postSaveSource.indexOf('applyMergedCloudMetadata(payload, activeChildId, preserveLocalChildIds)');
 const postSaveFailureIndex = postSaveSource.indexOf('if (!postSaveResult.ok)');
 const resolvedChildIndex = postSaveSource.indexOf('activeChildId: resolvedActiveChildId');
 const sameChildReloadIndex = postSaveSource.indexOf('reloadCloudLearningState(resolvedActiveChildId, resolvedActiveChildId === activeChildId)');

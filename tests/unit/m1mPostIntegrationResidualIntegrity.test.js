@@ -59,6 +59,7 @@ function loadApplyMergedCloudMetadata(overrides = {}) {
     CLOUD_CHILD_STATE_KEY,
     CLOUD_SYNC_META_KEY,
     DELETED_CHILDREN_KEY,
+    ACTIVE_CHILD_KEY: 'active-child',
     CHILD_SNAPSHOT_PREFIX,
     CHILD_ORIGINAL_SNAPSHOT_PREFIX,
     CHILD_MERGED_BACKUP_PREFIX,
@@ -108,6 +109,44 @@ function cloudPayload(extra = {}) {
 }
 
 describe('M1-M independent post-integration residual integrity', () => {
+  it.each([null, { score: 'B' }])('M1-N blocks a failed cross-child projection (%j)', fallback => {
+    const storage = new MemoryStorage({ 'active-child': ACTIVE_CHILD_ID, root: 'A' });
+    const restoreChildSnapshot = vi.fn(() => false);
+    const harness = loadApplyMergedCloudMetadata({
+      storage, restoreChildSnapshot, resolveChildSnapshot: () => fallback
+    });
+    const payload = { [CLOUD_CHILD_STATE_KEY]: JSON.stringify({
+      profiles: [{ id: OTHER_CHILD_ID, name: 'Child B' }],
+      deletedChildren: { [ACTIVE_CHILD_ID]: { deletedAt: 20 } }
+    }) };
+    const ack = vi.fn();
+    expect(applyCloudPostSaveEffects({
+      applyMetadata: () => harness.applyMergedCloudMetadata(payload, ACTIVE_CHILD_ID),
+      acknowledgeMutations: ack
+    })).toMatchObject({ ok: false });
+    expect(ack).not.toHaveBeenCalled();
+    expect(storage.getItem('active-child')).toBe(ACTIVE_CHILD_ID);
+    expect(storage.getItem('root')).toBe('A');
+  });
+
+  it('M1-N initializes an empty child before publishing its identity', () => {
+    const storage = new MemoryStorage({ 'active-child': ACTIVE_CHILD_ID, root: 'A' });
+    const harness = loadApplyMergedCloudMetadata({
+      storage,
+      restoreChildSnapshot: (snapshot, childId, accountId, activate) => {
+        expect(snapshot).toEqual({});
+        expect(storage.getItem('active-child')).toBe(ACTIVE_CHILD_ID);
+        storage.removeItem('root');
+        if (activate) storage.setItem('active-child', childId);
+        return true;
+      }
+    });
+    expect(harness.applyMergedCloudMetadata({
+      [CLOUD_CHILD_STATE_KEY]: JSON.stringify({ profiles: [{ id: OTHER_CHILD_ID, name: 'B' }] })
+    }, ACTIVE_CHILD_ID)).toMatchObject({ persisted: true });
+    expect(storage.getItem('root')).toBeNull();
+    expect(storage.getItem('active-child')).toBe(OTHER_CHILD_ID);
+  });
   it('MMR-CONTROL-01 applies mandatory active data directly when its optional cache hits quota', () => {
     const persistBoundedChildSnapshot = vi.fn((storage, key, raw) => {
       if (key === `${CHILD_SNAPSHOT_PREFIX}${ACTIVE_CHILD_ID}`) {
