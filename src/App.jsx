@@ -852,7 +852,6 @@ async function restoreCloudLearningSnapshotResult(cloudData = {}, preferredChild
 function applyMergedCloudMetadata(payload = {}, activeChildId = '', preserveLocalChildIds = []) {
   try {
     const preservedChildren = new Set((preserveLocalChildIds || []).filter(Boolean).map(String));
-    const activeChildHasNewerMutation = preservedChildren.has(String(activeChildId || ''));
     const metadata = JSON.parse(payload[CLOUD_CHILD_STATE_KEY] || '{}');
     const deletedChildren = metadata.deletedChildren && typeof metadata.deletedChildren === 'object'
       ? metadata.deletedChildren
@@ -869,6 +868,7 @@ function applyMergedCloudMetadata(payload = {}, activeChildId = '', preserveLoca
       || profiles.find(item => item.id === metadata.activeChildId)?.id
       || profiles[0]?.id
       || '';
+    const failed = { activeChildId: resolvedActiveChildId, persisted: false };
     writeChildProfiles(profiles);
     localStorage.setItem(DELETED_CHILDREN_KEY, JSON.stringify(deletedChildren));
     writeArchivedChildren(archivedChildren);
@@ -893,23 +893,25 @@ function applyMergedCloudMetadata(payload = {}, activeChildId = '', preserveLoca
       const childId = key.slice(prefix.length);
       if (deletedChildren[childId]) {
         localStorage.removeItem(key);
-      } else if ((childId !== activeChildId || !activeChildHasNewerMutation) && typeof raw === 'string') {
-        persistBoundedChildSnapshot(localStorage, key, raw, { removeExistingOnLimit: true });
+      } else if (!preservedChildren.has(childId) && typeof raw === 'string') {
+        persistChildRecoverySnapshot(key, raw);
       }
     });
+    const restoreMergedChild = childId => {
+      const raw = payload[`${CHILD_SNAPSHOT_PREFIX}${childId}`];
+      const snapshot = typeof raw === 'string' ? JSON.parse(raw) : resolveChildSnapshot(childId);
+      return (snapshot && restoreChildSnapshot(snapshot, childId))
+        || typeof raw !== 'string';
+    };
     if (requestedActiveProfile) {
-      if (activeChildHasNewerMutation) {
+      if (preservedChildren.has(String(activeChildId || ''))) {
         captureChildSnapshot(activeChildId, { force: true });
-      } else {
-        const mergedActiveSnapshot = resolveChildSnapshot(activeChildId);
-        if (mergedActiveSnapshot) restoreChildSnapshot(mergedActiveSnapshot, activeChildId);
-      }
+      } else if (!restoreMergedChild(activeChildId)) return failed;
     } else if (resolvedActiveChildId) {
       localStorage.removeItem(`${CHILD_SNAPSHOT_PREFIX}${activeChildId}`);
       localStorage.removeItem(`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${activeChildId}`);
       localStorage.setItem(ACTIVE_CHILD_KEY, resolvedActiveChildId);
-      const reconciledSnapshot = resolveChildSnapshot(resolvedActiveChildId);
-      if (reconciledSnapshot) restoreChildSnapshot(reconciledSnapshot, resolvedActiveChildId);
+      if (!restoreMergedChild(resolvedActiveChildId)) return failed;
     }
     return { activeChildId: resolvedActiveChildId, persisted: true };
   } catch {
